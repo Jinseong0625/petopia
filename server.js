@@ -5,15 +5,16 @@ const socketIO = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIO(server, { path: '/socket.io' });
+//const io = socketIO(server, { path: '/socket.io' });
+const io = socketIO(server);
 
 // 모바일 클라이언트와 PC 클라이언트를 저장할 변수
 let mobileClient;
 let pcClient;
 
-app.get('/socket.io', (req, res) => {
+/*app.get('/socket.io', (req, res) => {
     res.sendFile(__dirname + '/index.html');
-  });
+  });*/
 
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
