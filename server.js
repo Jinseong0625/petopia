@@ -12,13 +12,10 @@ const io = socketIO(server);
 let mobileClient;
 let pcClient;
 
-/*app.get('/socket.io', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-  });*/
-
-  app.get('/', (req, res) => {
+app.get('/socket.io', (req, res) => {
     res.sendFile(__dirname + '/index.html');
   });
+
 
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
