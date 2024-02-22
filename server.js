@@ -9,7 +9,7 @@ const io = socketIO(server);
 let mobileClient;
 let pcClient;
 
-app.get('/', (req, res) => {
+app.get('/socket', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
