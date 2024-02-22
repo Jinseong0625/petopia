@@ -43,7 +43,12 @@
             socket.emit('dataFromPC', { message });
         }
 
-        socket.on('dataToClient', (data) => {
+        socket.on('dataToMobile', (data) => {
+            const messageOutput = document.getElementById('messageOutput');
+            messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
+        });
+
+        socket.on('dataToPC', (data) => {
             const messageOutput = document.getElementById('messageOutput');
             messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
         });
