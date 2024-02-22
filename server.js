@@ -5,7 +5,7 @@ const socketIO = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIO(server, { path: '/socket_project/socket.io' });
+const io = socketIO(server, { path: '/socket.io' });
 
 // 모바일 클라이언트와 PC 클라이언트를 저장할 변수
 let mobileClient;
