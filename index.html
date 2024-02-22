@@ -4,65 +4,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Socket.io Client</title>
+    <title>Socket.IO Relay Client</title>
 </head>
 <body>
-    <h1>Socket.io Client</h1>
-    
-    <!-- 모바일 클라이언트 버튼과 입력 필드 -->
-    <div>
-        <button onclick="connectToMobileServer()">Connect to Mobile Server</button>
-        <input id="mobileMessageInput" placeholder="Type a message">
-        <button onclick="sendMobileMessage()">Send Message</button>
-    </div>
+    <h1>Socket.IO Relay Client</h1>
 
-    <!-- PC 클라이언트 버튼과 입력 필드 -->
-    <div>
-        <button onclick="connectToPCServer()">Connect to PC Server</button>
-        <input id="pcMessageInput" placeholder="Type a message">
-        <button onclick="sendPCMessage()">Send Message</button>
-    </div>
-    
-    <!-- 출력 창 -->
+    <button onclick="connectToMobileServer()">Connect to Mobile Server</button>
+    <input id="mobileMessageInput" placeholder="Type a message">
+    <button onclick="sendMobileMessage()">Send Message</button>
+
+    <button onclick="connectToPCServer()">Connect to PC Server</button>
+    <input id="pcMessageInput" placeholder="Type a message">
+    <button onclick="sendPCMessage()">Send Message</button>
+
     <div id="messageOutput"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
     <script>
         const socket = io();
 
         function connectToMobileServer() {
-            // 서버에 연결 (모바일 클라이언트)
             socket.emit('mobile');
             console.log('Connecting to Mobile Server...');
         }
 
         function connectToPCServer() {
-            // 서버에 연결 (PC 클라이언트)
             socket.emit('pc');
             console.log('Connecting to PC Server...');
         }
 
         function sendMobileMessage() {
             const message = document.getElementById('mobileMessageInput').value;
-            
-            // 서버로 메시지 전송 (모바일 클라이언트)
             socket.emit('dataFromMobile', { message });
         }
 
         function sendPCMessage() {
             const message = document.getElementById('pcMessageInput').value;
-            
-            // 서버로 메시지 전송 (PC 클라이언트)
             socket.emit('dataFromPC', { message });
         }
 
-        // 서버로부터 메시지 수신
         socket.on('dataToClient', (data) => {
             const messageOutput = document.getElementById('messageOutput');
             messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
         });
 
-        // 연결 상태 확인
         socket.on('connect', () => {
             console.log('Connected to Socket.IO server!');
         });
