@@ -11,7 +11,7 @@ const io = socketIO(server, { path: '/socket.io' });
 let mobileClient;
 let pcClient;
 
-app.get('/socket_project', (req, res) => {
+app.get('/socket.io', (req, res) => {
     res.sendFile(__dirname + '/index.html');
   });
 
