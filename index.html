@@ -33,11 +33,13 @@
         function connectToMobileServer() {
             // 서버에 연결 (모바일 클라이언트)
             socket.emit('mobile');
+            console.log('Connecting to Mobile Server...');
         }
 
         function connectToPCServer() {
             // 서버에 연결 (PC 클라이언트)
             socket.emit('pc');
+            console.log('Connecting to PC Server...');
         }
 
         function sendMobileMessage() {
@@ -58,6 +60,15 @@
         socket.on('dataToClient', (data) => {
             const messageOutput = document.getElementById('messageOutput');
             messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
+        });
+
+        // 연결 상태 확인
+        socket.on('connect', () => {
+            console.log('Connected to Socket.IO server!');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from Socket.IO server...');
         });
     </script>
 </body>
