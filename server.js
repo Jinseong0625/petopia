@@ -43,18 +43,21 @@ io.on('connection', (socket) => {
     socket.on('dataFromMobile', (data) => {
         if (pcClient) {
             pcClient.emit('dataToPC', data);
+            console.log('Data received from mobile and sent to PC:', data);
         }
     });
 
     socket.on('dogDataFromMobile', (dogData) => {
         if (pcClient) {
             pcClient.emit('dogDataFromMobile', dogData);
+            console.log('Dog data received from mobile and sent to PC:', dogData);
         }
     });
 
     socket.on('dataFromPC', (data) => {
         if (mobileClient) {
             mobileClient.emit('dataToMobile', data);
+            console.log('Data received from PC and sent to mobile:', data);
         }
     });
 

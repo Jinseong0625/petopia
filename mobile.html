@@ -35,6 +35,7 @@
             };
 
             socket.emit('dogDataFromMobile', dogData);
+            console.log('Dog data sent to server:', dogData);
         }
 
         socket.on('dataToClient', (data) => {
