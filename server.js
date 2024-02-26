@@ -40,6 +40,12 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('dataFromMobile', (dogData) => {
+        if (pcClient) {
+            pcClient.emit('dataFromMobile', dogData);
+        }
+    });
+
     socket.on('dataFromPC', (data) => {
         if (mobileClient) {
             mobileClient.emit('dataToMobile', data);

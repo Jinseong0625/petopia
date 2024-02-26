@@ -12,6 +12,8 @@
     <button onclick="sendMobileMessage()">Send Message to PC</button>
     <input id="mobileMessageInput" placeholder="Type a message">
 
+    <button onclick="sendDogData()">Send Dog Data to PC</button>
+
     <div id="messageOutput"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
@@ -21,6 +23,18 @@
         function sendMobileMessage() {
             const message = document.getElementById('mobileMessageInput').value;
             socket.emit('dataFromMobile', { message });
+        }
+
+        function sendDogData() {
+            // 강아지 데이터를 담은 객체
+            const dogData = {
+                name: "Buddy",
+                age: 2,
+                breed: "Golden Retriever",
+                // 추가적인 강아지 데이터
+            };
+
+            socket.emit('dataFromMobile', dogData);
         }
 
         socket.on('dataToClient', (data) => {

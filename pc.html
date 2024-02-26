@@ -14,6 +14,8 @@
 
     <div id="messageOutput"></div>
 
+    <div id="dogDataOutput"></div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
     <script>
         const socket = io('http://218.38.65.83:3567');
@@ -26,6 +28,16 @@
         socket.on('dataToClient', (data) => {
             const messageOutput = document.getElementById('messageOutput');
             messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
+
+            if (data.dogData) {
+                const dogDataOutput = document.getElementById('dogDataOutput');
+                dogDataOutput.innerHTML = `
+                    <p>Dog Name: ${data.dogData.name}</p>
+                    <p>Dog Age: ${data.dogData.age}</p>
+                    <p>Dog Breed: ${data.dogData.breed}</p>
+                    <!-- 추가적인 강아지 데이터 출력 -->
+                `;
+            }
         });
 
         socket.on('connect', () => {
