@@ -3,6 +3,11 @@ const http = require('http');
 const socketIO = require('socket.io');
 
 const app = express();
+const corsOptions = {
+    origin: 'http://218.38.65.83', // 모바일 앱의 도메인 또는 IP 주소로 변경
+    optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 const server = http.createServer(app);
 const io = socketIO(server);
 
