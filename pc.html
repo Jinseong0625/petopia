@@ -18,17 +18,18 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
     <script>
-        const socket = io();
-
+        const socket = io(); // 서버 주소를 명시적으로 지정
+    
         function sendPCMessage() {
             const message = document.getElementById('pcMessageInput').value;
             socket.emit('dataFromPC', { message });
+            console.log('Message sent to mobile:', { message });
         }
-
+    
         socket.on('dataToClient', (data) => {
             const messageOutput = document.getElementById('messageOutput');
             messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
-
+    
             if (data.dogData) {
                 const dogDataOutput = document.getElementById('dogDataOutput');
                 dogDataOutput.innerHTML = `
@@ -37,15 +38,15 @@
                     <p>Dog Breed: ${data.dogData.breed}</p>
                     <!-- 추가적인 강아지 데이터 출력 -->
                 `;
-
+    
                 console.log('Dog data received from server:', data.dogData);
             }
         });
-
+    
         socket.on('connect', () => {
             console.log('Connected to Socket.IO server!');
         });
-
+    
         socket.on('disconnect', () => {
             console.log('Disconnected from Socket.IO server...');
         });

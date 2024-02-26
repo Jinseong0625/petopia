@@ -4,11 +4,7 @@ const socketIO = require('socket.io');
 const cors = require('cors');
 
 const app = express();
-const corsOptions = {
-    origin: 'http://218.38.65.83', // 모바일 앱의 도메인 또는 IP 주소로 변경
-    optionsSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
+app.use(cors()); // 모든 origin에 대해 CORS를 허용합니다.
 const server = http.createServer(app);
 const io = socketIO(server);
 
