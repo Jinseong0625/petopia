@@ -40,9 +40,9 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('dataFromMobile', (dogData) => {
+    socket.on('dogDataFromMobile', (dogData) => {
         if (pcClient) {
-            pcClient.emit('dataFromMobile', dogData);
+            pcClient.emit('dogDataFromMobile', dogData);
         }
     });
 

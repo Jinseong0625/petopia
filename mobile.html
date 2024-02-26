@@ -34,7 +34,7 @@
                 // 추가적인 강아지 데이터
             };
 
-            socket.emit('dataFromMobile', dogData);
+            socket.emit('dogDataFromMobile', dogData);
         }
 
         socket.on('dataToClient', (data) => {
