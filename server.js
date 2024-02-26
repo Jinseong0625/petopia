@@ -13,6 +13,16 @@ app.get('/socket', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
+// 모바일 클라이언트용 HTML 파일 라우팅
+app.get('/mobile', (req, res) => {
+    res.sendFile(__dirname + '/mobile.html');
+});
+
+// PC 클라이언트용 HTML 파일 라우팅
+app.get('/pc', (req, res) => {
+    res.sendFile(__dirname + '/pc.html');
+});
+
 io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
 

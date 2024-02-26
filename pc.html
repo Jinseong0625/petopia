@@ -1,0 +1,40 @@
+<!-- pc.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC Client</title>
+</head>
+<body>
+    <h1>PC Client</h1>
+
+    <button onclick="sendPCMessage()">Send Message to Mobile</button>
+    <input id="pcMessageInput" placeholder="Type a message">
+
+    <div id="messageOutput"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        function sendPCMessage() {
+            const message = document.getElementById('pcMessageInput').value;
+            socket.emit('dataFromPC', { message });
+        }
+
+        socket.on('dataToClient', (data) => {
+            const messageOutput = document.getElementById('messageOutput');
+            messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
+        });
+
+        socket.on('connect', () => {
+            console.log('Connected to Socket.IO server!');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from Socket.IO server...');
+        });
+    </script>
+</body>
+</html>
