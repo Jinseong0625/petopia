@@ -18,7 +18,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
     <script>
-        const socket = io(); // 서버 주소를 명시적으로 지정
+        const socket = io('http://218.38.65.83:3567'); // 서버 주소를 명시적으로 지정
     
         function sendPCMessage() {
             const message = document.getElementById('pcMessageInput').value;
