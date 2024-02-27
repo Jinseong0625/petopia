@@ -38,8 +38,17 @@
         }
 
         socket.on('dataToClient', (data) => {
-            const messageOutput = document.getElementById('messageOutput');
-            messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
+            const output = document.getElementById('output');
+            
+            let logMessage;
+            if (typeof data.message === 'object') {
+                // 객체인 경우 JSON.stringify를 사용하여 문자열로 변환
+                logMessage = `<p>${data.from}: ${JSON.stringify(data.message)}</p>`;
+            } else {
+                logMessage = `<p>${data.from}: ${data.message}</p>`;
+            }
+
+            output.innerHTML += logMessage;
         });
 
         socket.on('connect', () => {
