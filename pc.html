@@ -40,7 +40,7 @@
             }
 
             const textOutput = document.getElementById('textOutput');
-            textOutput.innerHTML += `<p>Received data: ${JSON.stringify(data)}</p>`;
+            textOutput.innerHTML += `<p>Received data: ${JSON.stringify(data.dogData)}</p>`;
         });
 
         socket.on('connect', () => {
