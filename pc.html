@@ -12,9 +12,9 @@
     <button onclick="sendPCMessage()">Send Message to Mobile</button>
     <input id="pcMessageInput" placeholder="Type a message">
 
-    <div id="messageOutput"></div> <!-- 추가: 텍스트를 표시할 div -->
-
+    <div id="messageOutput"></div>
     <div id="dogDataOutput"></div>
+    <div id="textOutput"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
     <script>
@@ -36,13 +36,11 @@
                     <p>Dog Name: ${data.dogData.name}</p>
                     <p>Dog Age: ${data.dogData.age}</p>
                     <p>Dog Breed: ${data.dogData.breed}</p>
-                    <!-- 추가적인 강아지 데이터 출력 -->
                 `;
-
-                // 추가: 텍스트를 표시할 div에 텍스트 추가
-                const textOutput = document.getElementById('textOutput');
-                textOutput.innerHTML += `<p>Received data: ${JSON.stringify(data)}</p>`;
             }
+
+            const textOutput = document.getElementById('textOutput');
+            textOutput.innerHTML += `<p>Received data: ${JSON.stringify(data)}</p>`;
         });
 
         socket.on('connect', () => {
