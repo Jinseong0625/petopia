@@ -39,14 +39,7 @@
 
         socket.on('dataToClient', (data) => {
             const messageOutput = document.getElementById('messageOutput');
-
-            // 브로드캐스팅된 데이터가 객체일 경우 JSON.stringify 사용
-            const message = typeof data.message === 'object' ? JSON.stringify(data.message) : data.message;
-
-            messageOutput.innerHTML += `<p>${data.from}: ${message}</p>`;
-
-            const textOutput = document.getElementById('textOutput');
-            textOutput.innerHTML += `<p>Received data: ${message}</p>`;
+            messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
         });
 
         socket.on('connect', () => {
