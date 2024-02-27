@@ -31,9 +31,11 @@
             const dogDataOutput = document.getElementById('dogDataOutput');
             const textOutput = document.getElementById('textOutput');
 
+            let logMessage;
+
             if (data.type === 'message' && data.data !== undefined) {
                 // Message 출력
-                messageOutput.innerHTML += `<p>${data.from}: ${data.data}</p>`;
+                logMessage = `<p>${data.from}: ${data.data}</p>`;
                 textOutput.innerHTML += `<p>Received message: ${data.data}</p>`;
             }
 
@@ -45,6 +47,10 @@
                     <p>Dog Breed: ${data.data.breed}</p>
                 `;
                 textOutput.innerHTML += `<p>Received dog data: ${JSON.stringify(data.data)}</p>`;
+            }
+
+            if (logMessage) {
+                messageOutput.innerHTML += logMessage;
             }
         })
 
