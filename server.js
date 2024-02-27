@@ -56,7 +56,7 @@ io.on('connection', (socket) => {
             pcClient.emit('dogDataFromMobile', dogData);
             console.log('Dog data received from mobile and sent to PC:', dogData);
 
-            io.emit('dataToClient', { from: 'Server', message: dogData });
+            io.emit('dataToClient', { from: 'Server', message: JSON.stringify(dogData) });
         } else {
             console.error('pcClient is not available');
         }
