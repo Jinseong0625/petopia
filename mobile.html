@@ -47,10 +47,14 @@
             } else {
                 let logMessage;
 
-                if (data.message !== undefined) {
-                    logMessage = `<p>${data.from}: ${data.message}</p>`;
-                } else if (data.dogData !== undefined) {
-                    logMessage = `<p>${data.from}: Dog Name - ${data.dogData.name}, Age - ${data.dogData.age}, Breed - ${data.dogData.breed}</p>`;
+                if (data.type === 'message' && data.data !== undefined) {
+                    // Message 출력
+                    logMessage = `<p>${data.from}: ${data.data}</p>`;
+                }
+
+                if (data.type === 'dogData' && data.data !== undefined) {
+                    // Dog Data 출력
+                    logMessage = `<p>${data.from}: Dog Name - ${data.data.name}, Age - ${data.data.age}, Breed - ${data.data.breed}</p>`;
                 }
 
                 output.innerHTML += logMessage;
