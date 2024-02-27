@@ -42,18 +42,18 @@
             const output = document.getElementById('output');
 
             // output이 null이 아닌 경우에만 처리
-            if (output) {
+            if (!output) {
+                console.error('Output element not found');
+            } else {
                 let logMessage;
-                if (typeof data.message === 'object') {
-                    // 객체인 경우 JSON.stringify를 사용하여 문자열로 변환
-                    logMessage = `<p>${data.from}: ${JSON.stringify(data.message)}</p>`;
-                } else {
+
+                if (data.message !== undefined) {
                     logMessage = `<p>${data.from}: ${data.message}</p>`;
+                } else if (data.dogData !== undefined) {
+                    logMessage = `<p>${data.from}: Dog Name - ${data.dogData.name}, Age - ${data.dogData.age}, Breed - ${data.dogData.breed}</p>`;
                 }
 
                 output.innerHTML += logMessage;
-            } else {
-                console.error('Output element not found');
             }
         });
 
