@@ -4,7 +4,11 @@ const socketIO = require('socket.io');
 const cors = require('cors');
 
 const app = express();
-app.use(cors()); // 모든 origin에 대해 CORS를 허용합니다.
+const corsOptions = {
+    origin: '*', // 모든 origin에 대해 CORS를 허용합니다.
+    optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions)); // 모든 origin에 대해 CORS를 허용합니다.
 const server = http.createServer(app);
 const io = socketIO(server);
 
@@ -30,15 +34,17 @@ io.on('connection', (socket) => {
 
     socket.on('mobile', () => {
         mobileClient = socket;
+        console.log('Mobile client connected:', socket.id);
     });
 
     socket.on('pc', () => {
         pcClient = socket;
+        console.log('PC client connected:', socket.id);
     });
 
     socket.on('dataFromMobile', (data) => {
         if (pcClient) {
-            pcClient.emit('dataToPC', data);
+            pcClient.emit('dataToClient', data);
             console.log('Data received from mobile and sent to PC:', data);
         }
     });
@@ -52,7 +58,7 @@ io.on('connection', (socket) => {
 
     socket.on('dataFromPC', (data) => {
         if (mobileClient) {
-            mobileClient.emit('dataToMobile', data);
+            mobileClient.emit('dataToClient', data);
             console.log('Data received from PC and sent to mobile:', data);
         }
     });
