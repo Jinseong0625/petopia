@@ -15,6 +15,7 @@
     <button onclick="sendDogData()">Send Dog Data to PC</button>
 
     <div id="messageOutput"></div>
+    <div id="textOutput"></div> <!-- 추가: 텍스트를 표시할 div -->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
     <script>
@@ -23,17 +24,15 @@
         function sendMobileMessage() {
             const message = document.getElementById('mobileMessageInput').value;
             socket.emit('dataFromMobile', { message });
+            console.log('Message sent to server:', { message });
         }
 
         function sendDogData() {
-            // 강아지 데이터를 담은 객체
             const dogData = {
                 name: "Buddy",
                 age: 2,
                 breed: "Golden Retriever",
-                // 추가적인 강아지 데이터
             };
-
             socket.emit('dogDataFromMobile', dogData);
             console.log('Dog data sent to server:', dogData);
         }
@@ -43,8 +42,10 @@
             messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
         });
 
+        // 추가: 텍스트를 표시할 div에 텍스트 추가
         socket.on('connect', () => {
-            console.log('Connected to Socket.IO server!');
+            const textOutput = document.getElementById('textOutput');
+            textOutput.innerHTML += '<p>Connected to Socket.IO server!</p>';
         });
 
         socket.on('disconnect', () => {
