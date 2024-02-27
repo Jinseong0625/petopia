@@ -31,22 +31,22 @@
             const dogDataOutput = document.getElementById('dogDataOutput');
             const textOutput = document.getElementById('textOutput');
 
-            if (data.message !== undefined) {
-            // Message 출력
-            messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
-            textOutput.innerHTML += `<p>Received message: ${data.message}</p>`;
+            if (data.type === 'message' && data.data !== undefined) {
+                // Message 출력
+                messageOutput.innerHTML += `<p>${data.from}: ${data.data}</p>`;
+                textOutput.innerHTML += `<p>Received message: ${data.data}</p>`;
             }
 
-            if (data.dogData !== undefined) {
+            if (data.type === 'dogData' && data.data !== undefined) {
                 // Dog Data 출력
                 dogDataOutput.innerHTML = `
-                    <p>Dog Name: ${data.dogData.name}</p>
-                    <p>Dog Age: ${data.dogData.age}</p>
-                    <p>Dog Breed: ${data.dogData.breed}</p>
+                    <p>Dog Name: ${data.data.name}</p>
+                    <p>Dog Age: ${data.data.age}</p>
+                    <p>Dog Breed: ${data.data.breed}</p>
                 `;
-                textOutput.innerHTML += `<p>Received dog data: ${JSON.stringify(data.dogData)}</p>`;
+                textOutput.innerHTML += `<p>Received dog data: ${JSON.stringify(data.data)}</p>`;
             }
-        });
+        })
 
         socket.on('connect', () => {
             console.log('Connected to Socket.IO server!');
