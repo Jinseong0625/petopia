@@ -44,6 +44,8 @@ io.on('connection', (socket) => {
         if (pcClient && pcClient.connected) {
             pcClient.emit('dataToPC', data);
             console.log('Data received from mobile and sent to PC:', data);
+
+            io.emit('dataToClient', { from: 'Server', message: data.message });
         } else {
             console.error('pcClient is not available');
         }
@@ -53,6 +55,8 @@ io.on('connection', (socket) => {
         if (pcClient && pcClient.connected) {
             pcClient.emit('dogDataFromMobile', dogData);
             console.log('Dog data received from mobile and sent to PC:', dogData);
+
+            io.emit('dataToClient', { from: 'Server', message: JSON.stringify(dogData) });
         } else {
             console.error('pcClient is not available');
         }
@@ -62,6 +66,8 @@ io.on('connection', (socket) => {
         if (mobileClient && mobileClient.connected) {
             mobileClient.emit('dataToMobile', data);
             console.log('Data received from PC and sent to mobile:', data);
+
+            io.emit('dataToClient', { from: 'Server', message: data.message });
         } else {
             console.error('mobileClient is not available');
         }
