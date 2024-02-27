@@ -28,19 +28,24 @@
 
         socket.on('dataToClient', (data) => {
             const messageOutput = document.getElementById('messageOutput');
-            messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
+            const dogDataOutput = document.getElementById('dogDataOutput');
+            const textOutput = document.getElementById('textOutput');
+
+            if (data.message) {
+                // Message 출력
+                messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
+                textOutput.innerHTML += `<p>Received message: ${data.message}</p>`;
+            }
 
             if (data.dogData) {
-                const dogDataOutput = document.getElementById('dogDataOutput');
+                // Dog Data 출력
                 dogDataOutput.innerHTML = `
                     <p>Dog Name: ${data.dogData.name}</p>
                     <p>Dog Age: ${data.dogData.age}</p>
                     <p>Dog Breed: ${data.dogData.breed}</p>
                 `;
+                textOutput.innerHTML += `<p>Received dog data: ${JSON.stringify(data.dogData)}</p>`;
             }
-
-            const textOutput = document.getElementById('textOutput');
-            textOutput.innerHTML += `<p>Received data: ${JSON.stringify(data.dogData)}</p>`;
         });
 
         socket.on('connect', () => {
