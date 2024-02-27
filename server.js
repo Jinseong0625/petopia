@@ -19,12 +19,10 @@ app.get('/socket', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-// 모바일 클라이언트용 HTML 파일 라우팅
 app.get('/mobile', (req, res) => {
     res.sendFile(__dirname + '/mobile.html');
 });
 
-// PC 클라이언트용 HTML 파일 라우팅
 app.get('/pc', (req, res) => {
     res.sendFile(__dirname + '/pc.html');
 });
@@ -34,10 +32,12 @@ io.on('connection', (socket) => {
 
     socket.on('mobile', () => {
         mobileClient = socket;
+        console.log('Mobile client connected:', socket.id);
     });
 
     socket.on('pc', () => {
         pcClient = socket;
+        console.log('PC client connected:', socket.id);
     });
 
     socket.on('dataFromMobile', (data) => {
@@ -71,8 +71,10 @@ io.on('connection', (socket) => {
         console.log('Client disconnected:', socket.id);
         if (socket === mobileClient) {
             mobileClient = null;
+            console.log('Mobile client disconnected:', socket.id);
         } else if (socket === pcClient) {
             pcClient = null;
+            console.log('PC client disconnected:', socket.id);
         }
     });
 });

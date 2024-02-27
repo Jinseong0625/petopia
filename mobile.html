@@ -9,13 +9,13 @@
 <body>
     <h1>Mobile Client</h1>
 
-    <button onclick="sendMobileMessage()">Send Message to PC</button>
+    <button onclick="sendMobileMessage()">Send Message to Server</button>
     <input id="mobileMessageInput" placeholder="Type a message">
 
-    <button onclick="sendDogData()">Send Dog Data to PC</button>
+    <button onclick="sendDogData()">Send Dog Data to Server</button>
 
     <div id="messageOutput"></div>
-    <div id="textOutput"></div> <!-- 추가: 텍스트를 표시할 div -->
+    <div id="textOutput"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
     <script>
@@ -42,10 +42,12 @@
             messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
         });
 
-        // 추가: 텍스트를 표시할 div에 텍스트 추가
         socket.on('connect', () => {
             const textOutput = document.getElementById('textOutput');
             textOutput.innerHTML += '<p>Connected to Socket.IO server!</p>';
+
+            // 추가: mobile 이벤트 발생
+            socket.emit('mobile');
         });
 
         socket.on('disconnect', () => {

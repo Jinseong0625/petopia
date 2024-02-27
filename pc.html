@@ -45,6 +45,9 @@
 
         socket.on('connect', () => {
             console.log('Connected to Socket.IO server!');
+            
+            // 추가: pc 이벤트 발생
+            socket.emit('pc');
         });
 
         socket.on('disconnect', () => {
