@@ -39,7 +39,17 @@
 
         socket.on('dataToClient', (data) => {
             const messageOutput = document.getElementById('messageOutput');
-            messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
+            const textOutput = document.getElementById('textOutput');
+
+            if (typeof data.message === 'object') {
+                // 객체인 경우 JSON.stringify를 사용하여 문자열로 변환
+                const jsonString = JSON.stringify(data.message);
+                messageOutput.innerHTML += `<p>${data.from}: ${jsonString}</p>`;
+                textOutput.innerHTML += `<p>Received data: ${jsonString}</p>`;
+            } else {
+                messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
+                textOutput.innerHTML += `<p>Received data: ${data.message}</p>`;
+            }
         });
 
         socket.on('connect', () => {
