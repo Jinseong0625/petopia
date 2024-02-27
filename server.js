@@ -34,43 +34,46 @@ io.on('connection', (socket) => {
 
     socket.on('mobile', () => {
         mobileClient = socket;
-        console.log('Mobile client connected:', socket.id);
     });
 
     socket.on('pc', () => {
         pcClient = socket;
-        console.log('PC client connected:', socket.id);
     });
 
     socket.on('dataFromMobile', (data) => {
-        if (pcClient) {
-            pcClient.emit('dataToClient', data);
+        if (pcClient && pcClient.connected) {
+            pcClient.emit('dataToPC', data);
             console.log('Data received from mobile and sent to PC:', data);
+        } else {
+            console.error('pcClient is not available');
         }
     });
 
     socket.on('dogDataFromMobile', (dogData) => {
-        try {
-            if (pcClient) {
-                pcClient.emit('dogDataFromMobile', dogData);
-                console.log('Dog data received from mobile and sent to PC:', dogData);
-            } else {
-                console.log('pcClient is not available');
-            }
-        } catch (error) {
-            console.error('Error in dogDataFromMobile event:', error);
+        if (pcClient && pcClient.connected) {
+            pcClient.emit('dogDataFromMobile', dogData);
+            console.log('Dog data received from mobile and sent to PC:', dogData);
+        } else {
+            console.error('pcClient is not available');
         }
     });
 
     socket.on('dataFromPC', (data) => {
-        if (mobileClient) {
-            mobileClient.emit('dataToClient', data);
+        if (mobileClient && mobileClient.connected) {
+            mobileClient.emit('dataToMobile', data);
             console.log('Data received from PC and sent to mobile:', data);
+        } else {
+            console.error('mobileClient is not available');
         }
     });
 
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
+        if (socket === mobileClient) {
+            mobileClient = null;
+        } else if (socket === pcClient) {
+            pcClient = null;
+        }
     });
 });
 
