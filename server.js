@@ -50,9 +50,15 @@ io.on('connection', (socket) => {
     });
 
     socket.on('dogDataFromMobile', (dogData) => {
-        if (pcClient) {
-            pcClient.emit('dogDataFromMobile', dogData);
-            console.log('Dog data received from mobile and sent to PC:', dogData);
+        try {
+            if (pcClient) {
+                pcClient.emit('dogDataFromMobile', dogData);
+                console.log('Dog data received from mobile and sent to PC:', dogData);
+            } else {
+                console.log('pcClient is not available');
+            }
+        } catch (error) {
+            console.error('Error in dogDataFromMobile event:', error);
         }
     });
 
