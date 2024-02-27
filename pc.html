@@ -31,13 +31,13 @@
             const dogDataOutput = document.getElementById('dogDataOutput');
             const textOutput = document.getElementById('textOutput');
 
-            if (data.message) {
-                // Message 출력
-                messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
-                textOutput.innerHTML += `<p>Received message: ${data.message}</p>`;
+            if (data.message !== undefined) {
+            // Message 출력
+            messageOutput.innerHTML += `<p>${data.from}: ${data.message}</p>`;
+            textOutput.innerHTML += `<p>Received message: ${data.message}</p>`;
             }
 
-            if (data.dogData) {
+            if (data.dogData !== undefined) {
                 // Dog Data 출력
                 dogDataOutput.innerHTML = `
                     <p>Dog Name: ${data.dogData.name}</p>
