@@ -16,11 +16,10 @@ server.on('connection', (client) => {
             const clientMessage = data.toString();
             console.log('Received from client:', clientMessage);
 
-            const command = parseCommand(clientMessage);
-            handleCommand(client, command);
-            broadcastCommand(client, command);
+            // 단순히 다른 클라이언트로 데이터 중계
+            relayData(client, clientMessage);
         } catch (error) {
-            console.error('Error handling command:', error);
+            console.error('Error handling data:', error);
         }
     });
 
@@ -37,70 +36,15 @@ server.on('connection', (client) => {
     });
 });
 
-function parseCommand(message) {
-    try {
-        return JSON.parse(message);
-    } catch (error) {
-        console.error('Error parsing JSON:', error);
-        return null;
-    }
-}
-
-function handleCommand(client, command) {
-    if (!command) {
-        console.error('Invalid command format');
-        return;
-    }
-
-    switch (command.type) {
-        case 'move':
-            handleMoveCommand(client, command);
-            break;
-        case 'sit':
-            handleSitCommand(client);
-            break;
-        case 'lie':
-            handleLieCommand(client);
-            break;
-        case 'shake':
-            handleShakeCommand(client);
-            break;
-        default:
-            console.error('Unknown command type:', command.type);
-    }
-}
-
-function handleMoveCommand(client, command) {
-    const targetPC = command.targetPC;
-    console.log(`Move the dog to PC: ${targetPC}`);
-    // 이동 처리 로직 추가
-}
-
-function handleSitCommand(client) {
-    console.log('Sit command received');
-    // 앉기 처리 로직 추가
-}
-
-function handleLieCommand(client) {
-    console.log('Lie command received');
-    // 눕기 처리 로직 추가
-}
-
-function handleShakeCommand(client) {
-    console.log('Shake command received');
-    // 손 흔들기 처리 로직 추가
-}
-
-function broadcastCommand(senderClient, command) {
-    const message = JSON.stringify(command);
-
+// 단순 중계 함수
+function relayData(senderClient, data) {
     clients.forEach((client) => {
         if (client !== senderClient) {
-            client.write(message);
+            client.write(data);
         }
     });
 
-    console.log('Command broadcasted to all clients:', message);
+    console.log('Data relayed to all clients:', data);
 }
 
 server.on('listening', () => {
