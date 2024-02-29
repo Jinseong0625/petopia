@@ -2,8 +2,8 @@ const net = require('net');
 
 const client = new net.Socket();
 
-const serverAddress = '127.0.0.1'; // 서버의 주소
-const serverPort = 50001; // 서버의 포트
+const serverAddress = '218.38.65.83'; // 서버의 주소
+const serverPort = 3567; // 서버의 포트
 
 client.connect(serverPort, serverAddress, () => {
   console.log('Connected to server!');
