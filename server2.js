@@ -1,58 +1,112 @@
-const dgram = require('dgram');
-const server = dgram.createSocket('udp4');
+const net = require('net');
+const server = net.createServer();
 const clients = [];
 
 server.on('error', (err) => {
-  console.log(`Server error:\n${err.stack}`);
-  server.close();
+    console.log(`Server error:\n${err.stack}`);
+    server.close();
 });
 
-server.on('message', (msg, rinfo) => {
-  try {
-    const data = JSON.parse(msg.toString());
+server.on('connection', (client) => {
+    console.log('Client connected:', client.remoteAddress, client.remotePort);
+    clients.push(client);
 
-    // 클라이언트 정보 업데이트 또는 추가
-    const existingClient = clients.find((client) => client.UUID === data.UUID);
-    if (existingClient) {
-      existingClient.ipAddress = data.ipAddress;
-      existingClient.statusPort = data.statusPort;
-    } else {
-      clients.push(data);
-    }
+    client.on('data', (data) => {
+        try {
+            const clientMessage = data.toString();
+            console.log('Received from client:', clientMessage);
 
-    // 클라이언트 목록을 다른 클라이언트에게 broadcast
-    broadcastClientList();
+            const command = parseCommand(clientMessage);
+            handleCommand(client, command);
+            broadcastCommand(client, command);
+        } catch (error) {
+            console.error('Error handling command:', error);
+        }
+    });
 
-  } catch (error) {
-    console.error('Error parsing JSON:', error);
-  }
+    client.on('end', () => {
+        console.log('Client disconnected');
+        const index = clients.indexOf(client);
+        if (index !== -1) {
+            clients.splice(index, 1);
+        }
+    });
+
+    client.on('error', (err) => {
+        console.error('Client error:', err.message);
+    });
 });
 
-function broadcastClientList() {
-    if (clients.length > 0) {
-      const clientListMessage = JSON.stringify(clients);
-      clients.forEach((client) => {
-        sendToClient(client, clientListMessage);
-      });
+function parseCommand(message) {
+    try {
+        return JSON.parse(message);
+    } catch (error) {
+        console.error('Error parsing JSON:', error);
+        return null;
     }
-  }
-  
+}
 
-function sendToClient(client, message) {
-  const clientSocket = dgram.createSocket('udp4');
-  clientSocket.send(message, client.statusPort, client.ipAddress, (err) => {
-    clientSocket.close();
-    if (err) {
-      console.error('Error sending message to client:', err);
+function handleCommand(client, command) {
+    if (!command) {
+        console.error('Invalid command format');
+        return;
     }
-  });
+
+    switch (command.type) {
+        case 'move':
+            handleMoveCommand(client, command);
+            break;
+        case 'sit':
+            handleSitCommand(client);
+            break;
+        case 'lie':
+            handleLieCommand(client);
+            break;
+        case 'shake':
+            handleShakeCommand(client);
+            break;
+        default:
+            console.error('Unknown command type:', command.type);
+    }
+}
+
+function handleMoveCommand(client, command) {
+    const targetPC = command.targetPC;
+    console.log(`Move the dog to PC: ${targetPC}`);
+    // 이동 처리 로직 추가
+}
+
+function handleSitCommand(client) {
+    console.log('Sit command received');
+    // 앉기 처리 로직 추가
+}
+
+function handleLieCommand(client) {
+    console.log('Lie command received');
+    // 눕기 처리 로직 추가
+}
+
+function handleShakeCommand(client) {
+    console.log('Shake command received');
+    // 손 흔들기 처리 로직 추가
+}
+
+function broadcastCommand(senderClient, command) {
+    const message = JSON.stringify(command);
+
+    clients.forEach((client) => {
+        if (client !== senderClient) {
+            client.write(message);
+        }
+    });
+
+    console.log('Command broadcasted to all clients:', message);
 }
 
 server.on('listening', () => {
     const address = server.address();
     console.log(`Server listening ${address.address}:${address.port}`);
     clients.length = 0; // 클라이언트 목록 초기화
-  });
-  
+});
 
-server.bind(9100);
+server.listen(3567, '218.38.65.83');
