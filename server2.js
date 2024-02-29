@@ -1,7 +1,5 @@
 const dgram = require('dgram');
 const server = dgram.createSocket('udp4');
-
-// 클라이언트 목록
 const clients = [];
 
 server.on('error', (err) => {
@@ -22,8 +20,7 @@ server.on('message', (msg, rinfo) => {
       clients.push(data);
     }
 
-    // 여기에서 클라이언트에게 필요한 작업 수행
-    // 예: 클라이언트 목록을 다른 클라이언트에게 broadcast
+    // 클라이언트 목록을 다른 클라이언트에게 broadcast
     broadcastClientList();
 
   } catch (error) {
