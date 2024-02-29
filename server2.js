@@ -29,11 +29,14 @@ server.on('message', (msg, rinfo) => {
 });
 
 function broadcastClientList() {
-  const clientListMessage = JSON.stringify(clients);
-  clients.forEach((client) => {
-    sendToClient(client, clientListMessage);
-  });
-}
+    if (clients.length > 0) {
+      const clientListMessage = JSON.stringify(clients);
+      clients.forEach((client) => {
+        sendToClient(client, clientListMessage);
+      });
+    }
+  }
+  
 
 function sendToClient(client, message) {
   const clientSocket = dgram.createSocket('udp4');
@@ -46,8 +49,10 @@ function sendToClient(client, message) {
 }
 
 server.on('listening', () => {
-  const address = server.address();
-  console.log(`Server listening ${address.address}:${address.port}`);
-});
+    const address = server.address();
+    console.log(`Server listening ${address.address}:${address.port}`);
+    clients.length = 0; // 클라이언트 목록 초기화
+  });
+  
 
 server.bind(9100);
