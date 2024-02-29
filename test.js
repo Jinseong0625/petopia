@@ -1,7 +1,7 @@
 const readline = require('readline');
 const net = require('net');
 
-const serverIP = '127.0.0.1';  // 또는 'localhost'
+const serverIP = '218.38.65.83';  // 또는 'localhost'
 const serverPort = 3567;
 
 const client = new net.Socket();
