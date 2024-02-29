@@ -1,3 +1,6 @@
+const dgram = require('dgram');
+const server = dgram.createSocket('udp4');
+
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
@@ -9,8 +12,8 @@ const corsOptions = {
     optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions)); // 모든 origin에 대해 CORS를 허용합니다.
-const server = http.createServer(app);
-const io = socketIO(server);
+const httpServer = http.createServer(app);
+const io = socketIO(httpServer);
 
 let mobileClient;
 let pcClient;
@@ -42,10 +45,15 @@ io.on('connection', (socket) => {
 
     socket.on('dataFromMobile', (data) => {
         if (pcClient && pcClient.connected) {
-            pcClient.emit('dataToPC', data);
-            console.log('Data received from mobile and sent to PC:', data);
-
-            io.emit('dataToClient', { from: 'Server', type: 'message', data: data.message });
+            const message = JSON.stringify(data);
+            server.send(message, pcClient.port, pcClient.address, (err) => {
+                if (err) {
+                    console.error('Error sending data to PC:', err);
+                } else {
+                    console.log('Data received from mobile and sent to PC:', data);
+                    io.emit('dataToClient', { from: 'Server', type: 'message', data: data.message });
+                }
+            });
         } else {
             console.error('pcClient is not available');
         }
@@ -53,23 +61,17 @@ io.on('connection', (socket) => {
 
     socket.on('dogDataFromMobile', (dogData) => {
         if (pcClient && pcClient.connected) {
-            pcClient.emit('dogDataFromMobile', dogData);
-            console.log('Dog data received from mobile and sent to PC:', dogData);
-
-            io.emit('dataToClient', { from: 'Server', type: 'dogData', data: dogData });
+            const message = JSON.stringify(dogData);
+            server.send(message, pcClient.port, pcClient.address, (err) => {
+                if (err) {
+                    console.error('Error sending dog data to PC:', err);
+                } else {
+                    console.log('Dog data received from mobile and sent to PC:', dogData);
+                    io.emit('dataToClient', { from: 'Server', type: 'dogData', data: dogData });
+                }
+            });
         } else {
             console.error('pcClient is not available');
-        }
-    });
-
-    socket.on('dataFromPC', (data) => {
-        if (mobileClient && mobileClient.connected) {
-            mobileClient.emit('dataToMobile', data);
-            console.log('Data received from PC and sent to mobile:', data);
-
-            io.emit('dataToClient', { from: 'Server', type: 'message', data: data.message });;
-        } else {
-            console.error('mobileClient is not available');
         }
     });
 
@@ -86,6 +88,6 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3567;
-server.listen(PORT, () => {
+httpServer.listen(PORT, () => {
     console.log(`Relay Server running on http://localhost:${PORT}`);
 });
