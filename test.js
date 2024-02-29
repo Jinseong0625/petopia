@@ -1,7 +1,7 @@
 const readline = require('readline');
 const net = require('net');
 
-const serverIP = '218.38.65.83';
+const serverIP = '127.0.0.1';  // 또는 'localhost'
 const serverPort = 3567;
 
 const client = new net.Socket();
@@ -14,12 +14,12 @@ client.connect(serverPort, serverIP, () => {
         output: process.stdout
     });
 
-    rl.question('Enter a command (e.g., sit, lie, shake): ', (commandType) => {
-        const command = {
-            type: commandType.trim().toLowerCase()
+    rl.question('Enter data to broadcast: ', (inputData) => {
+        const data = {
+            message: inputData.trim()
         };
 
-        client.write(JSON.stringify(command));
+        client.write(JSON.stringify(data));
         rl.close();
     });
 });
