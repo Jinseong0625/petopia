@@ -24,6 +24,15 @@ client.connect(serverPort, serverIP, () => {
 client.on('data', (data) => {
     const serverMessage = data.toString();
     console.log('Received from server:', serverMessage);
+
+    try {
+        const serverData = JSON.parse(serverMessage);
+        if (serverData.log) {
+            console.log(serverData.log);
+        }
+    } catch (error) {
+        console.error('Error parsing server data:', error);
+    }
 });
 
 client.on('close', () => {

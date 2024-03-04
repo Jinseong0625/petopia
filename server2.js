@@ -60,6 +60,15 @@ function handleChannel(client, message) {
     }
 }
 
+// 클라이언트에게 로그를 전달하는 함수 추가
+function sendLogToClient(client, log) {
+    const logData = {
+        log
+    };
+    client.write(JSON.stringify(logData));
+}
+
+// 클라이언트가 채널에 참여하거나 나갈 때 로그 출력 및 클라이언트에게 로그 전달
 function joinChannel(client, channel) {
     if (!channels.has(channel)) {
         channels.set(channel, []);
@@ -70,6 +79,10 @@ function joinChannel(client, channel) {
         channelClients.push(client);
         console.log(`Client joined channel ${channel}`);
         console.log(`Channel ${channel} has ${channelClients.length} client(s)`);
+
+        // 클라이언트에게 로그 전달
+        sendLogToClient(client, `You joined channel ${channel}`);
+        sendLogToClient(client, `Channel ${channel} has ${channelClients.length} client(s)`);
     }
 }
 
@@ -83,13 +96,23 @@ function leaveChannel(client, channel) {
             console.log(`Client left channel ${channel}`);
             console.log(`Channel ${channel} has ${channelClients.length} client(s)`);
 
+            // 클라이언트에게 로그 전달
+            sendLogToClient(client, `You left channel ${channel}`);
+            sendLogToClient(client, `Channel ${channel} has ${channelClients.length} client(s)`);
+
             // 채널에 더 이상 클라이언트가 없으면 채널 삭제
             if (channelClients.length === 0) {
                 channels.delete(channel);
                 console.log(`Channel ${channel} deleted`);
+                sendLogToClient(client, `Channel ${channel} deleted`);
             }
         }
     }
+}
+
+// 클라이언트가 서버에 접속하면 환영 메시지 전송
+function welcomeClient(client) {
+    sendLogToClient(client, 'Welcome to the server!');
 }
 
 function removeClient(client) {
