@@ -1,6 +1,6 @@
-const chai = require('chai');
+import chai from 'chai';
 const assert = chai.assert;
-const net = require('net');
+import net from 'net';
 
 describe('Server Tests', () => {
   let server;
