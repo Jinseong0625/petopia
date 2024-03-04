@@ -21,17 +21,21 @@ client.connect(serverPort, serverIP, () => {
     });
 });
 
-client.on('data', (data) => {
-    const serverMessage = data.toString();
-    console.log('Received from server:', serverMessage);
+let receivedData = ''; // 받은 데이터를 임시로 저장할 변수
 
-    try {
-        const serverData = JSON.parse(serverMessage);
-        if (serverData.log) {
-            console.log(serverData.log);
+client.on('data', (data) => {
+    receivedData += data.toString(); // 받은 데이터를 계속 누적
+
+    // 줄바꿈을 기준으로 데이터를 분리
+    const dataChunks = receivedData.split('\n');
+
+    // 마지막 데이터를 처리하고 나머지는 임시 저장
+    if (dataChunks.length > 1) {
+        receivedData = dataChunks.pop();
+
+        for (const chunk of dataChunks) {
+            processReceivedData(chunk);
         }
-    } catch (error) {
-        console.error('Error parsing server data:', error);
     }
 });
 
@@ -52,4 +56,15 @@ function sendChannelRequest(client, channel, action) {
     };
 
     client.write(JSON.stringify(data));
+}
+
+function processReceivedData(chunk) {
+    try {
+        const serverData = JSON.parse(chunk);
+        if (serverData.log) {
+            console.log(serverData.log);
+        }
+    } catch (error) {
+        console.error('Error parsing server data:', error);
+    }
 }
