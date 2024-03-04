@@ -77,13 +77,17 @@ function joinChannel(client, channel) {
     const channelClients = channels.get(channel);
     if (!channelClients.includes(client)) {
         channelClients.push(client);
-        console.log(`Client joined channel ${channel}`);
-        console.log(`Channel ${channel} has ${channelClients.length} client(s)`);
-
-        // 클라이언트에게 로그 전달
-        sendLogToClient(client, `You joined channel ${channel}`);
-        sendLogToClient(client, `Channel ${channel} has ${channelClients.length} client(s)`);
     }
+
+    const logMessage = `You joined channel ${channel}`;
+    const channelInfoMessage = `Channel ${channel} has ${channelClients.length} client(s)`;
+
+    // 로그 메시지를 포함한 JSON 형태로 클라이언트에게 전송
+    client.write(JSON.stringify({ log: logMessage }));
+    client.write(JSON.stringify({ log: channelInfoMessage }));
+
+    console.log(logMessage);
+    console.log(channelInfoMessage);
 }
 
 function leaveChannel(client, channel) {
