@@ -7,6 +7,16 @@ const serverPort = 3567;
 const client1 = new net.Socket();
 const client2 = new net.Socket();
 
+const rl1 = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+const rl2 = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
 client1.connect(serverPort, serverIP, () => {
     console.log('Client 1 connected to server');
     joinChannel(client1, 'channel1');
@@ -31,10 +41,12 @@ client2.on('data', (data) => {
 
 client1.on('close', () => {
     console.log('Connection closed (Client 1)');
+    rl1.close();
 });
 
 client2.on('close', () => {
     console.log('Connection closed (Client 2)');
+    rl2.close();
 });
 
 client1.on('error', (err) => {
@@ -45,6 +57,16 @@ client2.on('error', (err) => {
     console.error('Error (Client 2):', err.message);
 });
 
+rl1.question('Enter channel to leave (Client 1): ', (channel) => {
+    leaveChannel(client1, channel);
+    rl1.close();
+});
+
+rl2.question('Enter channel to leave (Client 2): ', (channel) => {
+    leaveChannel(client2, channel);
+    rl2.close();
+});
+
 function joinChannel(client, channel) {
     const data = {
         channel,
@@ -53,6 +75,16 @@ function joinChannel(client, channel) {
 
     client.write(JSON.stringify(data));
     console.log(`Client joined channel ${channel}`);
+}
+
+function leaveChannel(client, channel) {
+    const data = {
+        channel,
+        action: 'leave'
+    };
+
+    client.write(JSON.stringify(data));
+    console.log(`Client left channel ${channel}`);
 }
 
 function sendData(client, channel, message) {
