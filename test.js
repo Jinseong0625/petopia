@@ -21,12 +21,14 @@ client1.connect(serverPort, serverIP, () => {
     console.log('Client 1 connected to server');
     joinChannel(client1, 'channel1');
     sendData(client1, 'channel1', 'Test message from Client 1');
+    handleUserInput(client1, rl1);
 });
 
 client2.connect(serverPort, serverIP, () => {
     console.log('Client 2 connected to server');
     joinChannel(client2, 'channel1');
     sendData(client2, 'channel1', 'Test message from Client 2');
+    handleUserInput(client2, rl2);
 });
 
 client1.on('data', (data) => {
@@ -57,16 +59,6 @@ client2.on('error', (err) => {
     console.error('Error (Client 2):', err.message);
 });
 
-rl1.question('Enter channel to leave (Client 1): ', (channel) => {
-    leaveChannel(client1, channel);
-    rl1.close();
-});
-
-rl2.question('Enter channel to leave (Client 2): ', (channel) => {
-    leaveChannel(client2, channel);
-    rl2.close();
-});
-
 function joinChannel(client, channel) {
     const data = {
         channel,
@@ -95,4 +87,14 @@ function sendData(client, channel, message) {
 
     client.write(JSON.stringify(data));
     console.log(`Client sent data to channel ${channel}: ${message}`);
+}
+
+function handleUserInput(client, rl) {
+    rl.question(`Enter "leave" to exit channel (Client ${client === client1 ? 1 : 2}): `, (input) => {
+        if (input.trim().toLowerCase() === 'leave') {
+            const channel = 'channel1'; // 변경 가능
+            leaveChannel(client, channel);
+        }
+        rl.close();
+    });
 }
