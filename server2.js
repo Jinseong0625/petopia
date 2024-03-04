@@ -68,9 +68,9 @@ function joinChannel(client, channel) {
     const channelClients = channels.get(channel);
     if (!channelClients.includes(client)) {
         channelClients.push(client);
+        console.log(`Client joined channel ${channel}`);
+        console.log(`Channel ${channel} has ${channelClients.length} client(s)`);
     }
-
-    console.log(`Client joined channel ${channel}`);
 }
 
 function leaveChannel(client, channel) {
@@ -81,12 +81,13 @@ function leaveChannel(client, channel) {
         if (index !== -1) {
             channelClients.splice(index, 1);
             console.log(`Client left channel ${channel}`);
-        }
+            console.log(`Channel ${channel} has ${channelClients.length} client(s)`);
 
-        // 채널에 더 이상 클라이언트가 없으면 채널 삭제
-        if (channelClients.length === 0) {
-            channels.delete(channel);
-            console.log(`Channel ${channel} deleted`);
+            // 채널에 더 이상 클라이언트가 없으면 채널 삭제
+            if (channelClients.length === 0) {
+                channels.delete(channel);
+                console.log(`Channel ${channel} deleted`);
+            }
         }
     }
 }
