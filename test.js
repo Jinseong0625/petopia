@@ -24,20 +24,24 @@ client.connect(serverPort, serverIP, () => {
 let receivedData = ''; // 받은 데이터를 임시로 저장할 변수
 
 client.on('data', (data) => {
-    receivedData += data.toString(); // 받은 데이터를 계속 누적
+    const serverMessage = data.toString();
+    console.log('Received from server:', serverMessage);
 
-    // 줄바꿈을 기준으로 데이터를 분리
-    const dataChunks = receivedData.split('\n');
+    try {
+        // 여러 개의 JSON 메시지가 들어올 수 있으므로 줄바꿈('\n')을 기준으로 분리
+        const messages = serverMessage.split('\n').filter(msg => msg.trim() !== '');
 
-    // 마지막 데이터를 처리하고 나머지는 임시 저장
-    if (dataChunks.length > 1) {
-        receivedData = dataChunks.pop();
-
-        for (const chunk of dataChunks) {
-            processReceivedData(chunk);
+        for (const msg of messages) {
+            const serverData = JSON.parse(msg);
+            if (serverData.log) {
+                console.log(serverData.log);
+            }
         }
+    } catch (error) {
+        console.error('Error parsing server data:', error);
     }
 });
+
 
 client.on('close', () => {
     console.log('Connection closed');
