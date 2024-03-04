@@ -1,100 +1,46 @@
 const net = require('net');
 const readline = require('readline');
 
-const serverIP = '218.38.65.83';  // 또는 'localhost'
+const serverIP = '218.38.65.83';
 const serverPort = 3567;
 
-const client1 = new net.Socket();
-const client2 = new net.Socket();
-
-const rl1 = readline.createInterface({
+const client = new net.Socket();
+const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-const rl2 = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+client.connect(serverPort, serverIP, () => {
+    console.log('Client connected to server');
 
-client1.connect(serverPort, serverIP, () => {
-    console.log('Client 1 connected to server');
-    joinChannel(client1, 'channel1');
-    sendData(client1, 'channel1', 'Test message from Client 1');
-    handleUserInput(client1, rl1);
-});
-
-client2.connect(serverPort, serverIP, () => {
-    console.log('Client 2 connected to server');
-    joinChannel(client2, 'channel1');
-    sendData(client2, 'channel1', 'Test message from Client 2');
-    handleUserInput(client2, rl2);
-});
-
-client1.on('data', (data) => {
-    const serverMessage = data.toString();
-    console.log('Received from server (Client 1):', serverMessage);
-});
-
-client2.on('data', (data) => {
-    const serverMessage = data.toString();
-    console.log('Received from server (Client 2):', serverMessage);
-});
-
-client1.on('close', () => {
-    console.log('Connection closed (Client 1)');
-    rl1.close();
-});
-
-client2.on('close', () => {
-    console.log('Connection closed (Client 2)');
-    rl2.close();
-});
-
-client1.on('error', (err) => {
-    console.error('Error (Client 1):', err.message);
-});
-
-client2.on('error', (err) => {
-    console.error('Error (Client 2):', err.message);
-});
-
-function joinChannel(client, channel) {
-    const data = {
-        channel,
-        action: 'join'
-    };
-
-    client.write(JSON.stringify(data));
-    console.log(`Client joined channel ${channel}`);
-}
-
-function leaveChannel(client, channel) {
-    const data = {
-        channel,
-        action: 'leave'
-    };
-
-    client.write(JSON.stringify(data));
-    console.log(`Client left channel ${channel}`);
-}
-
-function sendData(client, channel, message) {
-    const data = {
-        channel,
-        message
-    };
-
-    client.write(JSON.stringify(data));
-    console.log(`Client sent data to channel ${channel}: ${message}`);
-}
-
-function handleUserInput(client, rl) {
-    rl.question(`Enter "leave" to exit channel (Client ${client === client1 ? 1 : 2}): `, (input) => {
-        if (input.trim().toLowerCase() === 'leave') {
-            const channel = 'channel1'; // 변경 가능
-            leaveChannel(client, channel);
-        }
-        rl.close();
+    rl.question('Enter channel number: ', (channel) => {
+        rl.question('Enter "join" or "leave": ', (action) => {
+            sendChannelRequest(client, parseInt(channel), action.toLowerCase());
+            rl.close();
+        });
     });
+});
+
+client.on('data', (data) => {
+    const serverMessage = data.toString();
+    console.log('Received from server:', serverMessage);
+});
+
+client.on('close', () => {
+    console.log('Connection closed');
+    rl.close();
+});
+
+client.on('error', (err) => {
+    console.error('Error:', err.message);
+    rl.close();
+});
+
+function sendChannelRequest(client, channel, action) {
+    const data = {
+        channel,
+        action
+    };
+
+    client.write(JSON.stringify(data));
 }
