@@ -1,123 +1,98 @@
 const net = require('net');
-const server = net.createServer();
-const clients = [];
-const channels = new Map(); // 맵을 사용하여 채널 관리
+const readline = require('readline');
 
-server.on('error', (err) => {
-    console.log(`Server error:\n${err.stack}`);
-    server.close();
+const serverIP = '218.38.65.83';  // 또는 'localhost'
+const serverPort = 3567;
+
+const client1 = new net.Socket();
+const client2 = new net.Socket();
+
+const rl1 = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
 });
 
-server.on('connection', (client) => {
-    console.log('Client connected:', client.remoteAddress, client.remotePort);
-    clients.push(client);
-
-    client.on('data', (data) => {
-        try {
-            const clientMessage = JSON.parse(data.toString());
-            console.log('Received from client:', clientMessage);
-
-            // 메시지에 채널 정보가 있을 경우 채널을 관리
-            if (clientMessage.channel) {
-                handleChannel(client, clientMessage);
-            } else {
-                // 채널 정보가 없을 경우 단순 중계
-                relayData(client, data);
-            }
-        } catch (error) {
-            console.error('Error handling data:', error);
-        }
-    });
-
-    client.on('end', () => {
-        console.log('Client disconnected');
-        removeClient(client);
-    });
-
-    client.on('error', (err) => {
-        console.error('Client error:', err.message);
-        removeClient(client);
-    });
+const rl2 = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
 });
 
-function relayData(senderClient, data) {
-    clients.forEach((client) => {
-        if (client !== senderClient) {
-            client.write(data);
-        }
-    });
+client1.connect(serverPort, serverIP, () => {
+    console.log('Client 1 connected to server');
+    joinChannel(client1, 'channel1');
+    sendData(client1, 'channel1', 'Test message from Client 1');
+});
 
-    console.log('Data relayed to all clients:', data);
-}
+client2.connect(serverPort, serverIP, () => {
+    console.log('Client 2 connected to server');
+    joinChannel(client2, 'channel1');
+    sendData(client2, 'channel1', 'Test message from Client 2');
+});
 
-function handleChannel(client, message) {
-    const { channel, action } = message;
+client1.on('data', (data) => {
+    const serverMessage = data.toString();
+    console.log('Received from server (Client 1):', serverMessage);
+});
 
-    if (action === 'join') {
-        joinChannel(client, channel);
-    } else if (action === 'leave') {
-        leaveChannel(client, channel);
-    }
-}
+client2.on('data', (data) => {
+    const serverMessage = data.toString();
+    console.log('Received from server (Client 2):', serverMessage);
+});
+
+client1.on('close', () => {
+    console.log('Connection closed (Client 1)');
+    rl1.close();
+});
+
+client2.on('close', () => {
+    console.log('Connection closed (Client 2)');
+    rl2.close();
+});
+
+client1.on('error', (err) => {
+    console.error('Error (Client 1):', err.message);
+});
+
+client2.on('error', (err) => {
+    console.error('Error (Client 2):', err.message);
+});
+
+rl1.question('Enter channel to leave (Client 1): ', (channel) => {
+    leaveChannel(client1, channel);
+    rl1.close();
+});
+
+rl2.question('Enter channel to leave (Client 2): ', (channel) => {
+    leaveChannel(client2, channel);
+    rl2.close();
+});
 
 function joinChannel(client, channel) {
-    if (!channels.has(channel)) {
-        channels.set(channel, []);
-    }
+    const data = {
+        channel,
+        action: 'join'
+    };
 
-    const channelClients = channels.get(channel);
-    if (!channelClients.includes(client)) {
-        channelClients.push(client);
-    }
-
+    client.write(JSON.stringify(data));
     console.log(`Client joined channel ${channel}`);
 }
 
 function leaveChannel(client, channel) {
-    if (channels.has(channel)) {
-        const channelClients = channels.get(channel);
-        const index = channelClients.indexOf(client);
+    const data = {
+        channel,
+        action: 'leave'
+    };
 
-        if (index !== -1) {
-            channelClients.splice(index, 1);
-            console.log(`Client left channel ${channel}`);
-        }
-
-        // 채널에 더 이상 클라이언트가 없으면 채널 삭제
-        if (channelClients.length === 0) {
-            channels.delete(channel);
-            console.log(`Channel ${channel} deleted`);
-        }
-    }
+    client.write(JSON.stringify(data));
+    console.log(`Client left channel ${channel}`);
 }
 
-function removeClient(client) {
-    const index = clients.indexOf(client);
-    if (index !== -1) {
-        clients.splice(index, 1);
-    }
+function sendData(client, channel, message) {
+    const data = {
+        channel,
+        message
+    };
 
-    // 클라이언트가 속한 모든 채널에서 제거
-    channels.forEach((channelClients, channel) => {
-        const clientIndex = channelClients.indexOf(client);
-        if (clientIndex !== -1) {
-            channelClients.splice(clientIndex, 1);
-
-            // 채널에 더 이상 클라이언트가 없으면 채널 삭제
-            if (channelClients.length === 0) {
-                channels.delete(channel);
-                console.log(`Channel ${channel} deleted`);
-            }
-        }
-    });
-
-    console.log('Client removed:', client.remoteAddress, client.remotePort);
+    client.write(JSON.stringify(data));
+    console.log(`Client sent data to channel ${channel}: ${message}`);
 }
-
-server.on('listening', () => {
-    const address = server.address();
-    console.log(`Server listening ${address.address}:${address.port}`);
-    clients.length = 0; // 클라이언트 목록 초기화
-});
-
-server.listen(3567, '218.38.65.83');
