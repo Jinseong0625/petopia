@@ -3,7 +3,7 @@
 const net = require('net');
 const readline = require('readline');
 
-const serverIP = 'YOUR_SERVER_IP'; // 서버의 IP 주소로 변경하세요
+const serverIP = '218.38.65.83'; // 서버의 IP 주소로 변경하세요
 const serverPort = 3567;
 
 const client = new net.Socket();
