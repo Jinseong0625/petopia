@@ -12,6 +12,9 @@ server.on('connection', (client) => {
     console.log('Client connected:', client.remoteAddress, client.remotePort);
     clients.push(client);
 
+    // 클라이언트에게 환영 메시지 전송
+    welcomeClient(client);
+
     client.on('data', (data) => {
         try {
             const clientMessage = JSON.parse(data.toString());
@@ -52,13 +55,14 @@ function relayData(senderClient, data) {
     console.log('Data relayed to all clients:', data);
 }
 
+// 클라이언트가 채널에 참여하거나 나갈 때 로그 출력 및 클라이언트에게 로그 전달
 function handleChannel(client, message) {
-    const { channel, action } = message;
+    const { channel, packet, target, targetId } = message; // packet, target, targetId 추가
 
-    if (action === 'join') {
-        joinChannel(client, channel);
-    } else if (action === 'leave') {
-        leaveChannel(client, channel);
+    if (packet === 'join') {
+        joinChannel(client, channel, target, targetId);
+    } else if (packet === 'leave') {
+        leaveChannel(client, channel, target, targetId);
     }
 }
 
@@ -71,7 +75,7 @@ function sendLogToClient(client, log) {
 }
 
 // 클라이언트가 채널에 참여하거나 나갈 때 로그 출력 및 클라이언트에게 로그 전달
-function joinChannel(client, channel) {
+function joinChannel(client, channel, target, targetId) {
     if (!channels.has(channel)) {
         channels.set(channel, []);
     }
@@ -85,14 +89,20 @@ function joinChannel(client, channel) {
     const channelInfoMessage = `Channel ${channel} has ${channelClients.length} client(s)`;
 
     // 로그 메시지를 포함한 JSON 형태로 클라이언트에게 전송
-    client.write(JSON.stringify({ log: logMessage }));
-    client.write(JSON.stringify({ log: channelInfoMessage }));
+    sendLogToClient(client, logMessage);
+    sendLogToClient(client, channelInfoMessage);
 
     console.log(logMessage);
     console.log(channelInfoMessage);
+
+    // 타겟이 all이 아니면 해당 클라이언트에게만 메시지 전송
+    if (target !== 'all' && targetId !== 0) {
+        sendLogToClient(findClientById(targetId), logMessage);
+        sendLogToClient(findClientById(targetId), channelInfoMessage);
+    }
 }
 
-function leaveChannel(client, channel) {
+function leaveChannel(client, channel, target, targetId) {
     if (channels.has(channel)) {
         const channelClients = channels.get(channel);
         const index = channelClients.indexOf(client);
@@ -112,8 +122,19 @@ function leaveChannel(client, channel) {
                 console.log(`Channel ${channel} deleted`);
                 sendLogToClient(client, `Channel ${channel} deleted`);
             }
+
+            // 타겟이 all이 아니면 해당 클라이언트에게만 메시지 전송
+            if (target !== 'all' && targetId !== 0) {
+                sendLogToClient(findClientById(targetId), `You left channel ${channel}`);
+                sendLogToClient(findClientById(targetId), `Channel ${channel} has ${channelClients.length} client(s)`);
+            }
         }
     }
+}
+
+// ID를 기반으로 클라이언트 찾기
+function findClientById(clientId) {
+    return clients.find(client => client.id === clientId);
 }
 
 // 클라이언트가 서버에 접속하면 환영 메시지 전송
