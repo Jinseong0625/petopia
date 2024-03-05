@@ -19,6 +19,8 @@ server.on('connection', (client) => {
 
             // 메시지에 채널 정보가 있을 경우 채널을 관리
             if (clientMessage.channel) {
+                // 중계 함수 호출
+                relayDataToClients(client, data);
                 handleChannel(client, clientMessage);
             } else {
                 // 채널 정보가 없을 경우 단순 중계
@@ -140,6 +142,19 @@ function removeClient(client) {
     });
 
     console.log('Client removed:', client.remoteAddress, client.remotePort);
+}
+
+// 채널에 속한 클라이언트들에게 데이터 중계
+function relayDataToClients(senderClient, data) {
+    const channel = senderClient.channel; // 보낸 클라이언트의 채널 가져오기
+
+    channels.get(channel)?.forEach((client) => {
+        if (client !== senderClient) {
+            client.write(data); // 데이터 중계
+        }
+    });
+
+    console.log(`Data relayed to clients in channel ${channel}:`, data);
 }
 
 server.on('listening', () => {
