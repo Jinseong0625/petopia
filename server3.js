@@ -1,12 +1,8 @@
 const WebSocket = require('ws');
-const http = require('http');
-
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('WebSocket Server\n');
-});
 
 const wss = new WebSocket.Server({ port: 3567 });
+
+console.log('Server listening on port 3567');
 
 wss.on('connection', (ws) => {
     console.log('Client connected');
@@ -42,7 +38,3 @@ function relayDataToClients(senderClient, data) {
 function removeClient(client) {
     console.log('Client removed');
 }
-
-server.listen(3567, '218.38.65.83', () => {
-    console.log('Server listening on port 3567');
-});
