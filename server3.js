@@ -34,3 +34,12 @@ const PORT = 3567;
 server.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
+
+// 추가: 서버가 시작될 때 로그
+console.log('Server started.');
+
+// 추가: 프로세스 종료 시 로그
+process.on('SIGINT', () => {
+    console.log('Server shutting down.');
+    process.exit();
+});
