@@ -13,8 +13,13 @@ wss.on('connection', (ws) => {
 
     // 클라이언트로부터 메시지 수신
     ws.on('message', (data) => {
-        console.log('Received from client:', data);
-        relayDataToClients(ws, data);
+        try {
+            const clientMessage = JSON.parse(data);
+            console.log('Received from client:', clientMessage);
+            relayDataToClients(ws, data);
+        } catch (error) {
+            console.error('Error handling data:', error);
+        }
     });
 
     // 클라이언트 연결 해제 시
