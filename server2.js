@@ -71,7 +71,7 @@ function sendLogToClient(client, log) {
     const logData = {
         log
     };
-    client.write(JSON.stringify(logData));
+    client.write(JSON.stringify(logData) + '\n');
 }
 
 // 클라이언트가 채널에 참여하거나 나갈 때 로그 출력 및 클라이언트에게 로그 전달
@@ -134,7 +134,7 @@ function leaveChannel(client, channel, target, targetId) {
 
 // ID를 기반으로 클라이언트 찾기
 function findClientById(clientId) {
-    return clients.find(client => client.id === clientId);
+    return clients.find(client => client.remotePort === clientId);
 }
 
 // 클라이언트가 서버에 접속하면 환영 메시지 전송
@@ -171,7 +171,11 @@ function relayDataToClients(senderClient, data) {
 
     channels.get(channel)?.forEach((client) => {
         if (client !== senderClient) {
-            client.write(data); // 데이터 중계
+            const relayMessage = {
+                sender: senderClient.remotePort,
+                data: JSON.parse(data.toString())
+            };
+            client.write(JSON.stringify(relayMessage) + '\n');
         }
     });
 
