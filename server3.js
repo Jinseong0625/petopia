@@ -6,7 +6,7 @@ const server = http.createServer((req, res) => {
     res.end('WebSocket Server\n');
 });
 
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({ port: 3567 });
 
 wss.on('connection', (ws) => {
     console.log('Client connected');
