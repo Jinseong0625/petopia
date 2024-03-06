@@ -57,4 +57,4 @@ server.on('listening', () => {
     clients.length = 0; // 클라이언트 목록 초기화
 });
 
-server.listen(3567, '127.0.0.1');
+server.listen(3567, '218.38.65.83');
