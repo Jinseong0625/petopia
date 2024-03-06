@@ -5,22 +5,26 @@ const ws = new WebSocket('ws://localhost:3567');
 ws.on('open', () => {
     console.log('Connected to server');
 
-    // 테스트용 메시지 전송
+    // 테스트를 위해 채널 1로 메시지 보내기
     const message = {
         channel: 1,
-        target: 'all',
-        packet: 'test',
-        message: 'Hello, server!'
+        packet: 'test_packet',
+        message: 'Hello, Server!'
     };
 
     ws.send(JSON.stringify(message));
 });
 
 ws.on('message', (data) => {
-    console.log('Received from server:', data);
+    try {
+        const serverMessage = JSON.parse(data);
+        console.log('Received from server:', serverMessage);
 
-    // 연결 종료
-    ws.close();
+        // 테스트를 위해 서버로부터 받은 메시지 재전송
+        ws.send(data);
+    } catch (error) {
+        console.error('Error handling server message:', error);
+    }
 });
 
 ws.on('close', () => {
