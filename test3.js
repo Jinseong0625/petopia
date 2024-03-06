@@ -40,7 +40,7 @@ client.on('error', (err) => {
 });
 
 function sendChannelRequest(client, channel, packet, targetId, message) {
-    const data = {
+    const data2 = {
         channel,
         packet,
         target: 'all',
@@ -48,7 +48,7 @@ function sendChannelRequest(client, channel, packet, targetId, message) {
         message
     };
 
-    client.write(JSON.stringify(data));
+    client.write(JSON.stringify(data2));
 }
 
 function generateRandomPacketData() {
