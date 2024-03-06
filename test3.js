@@ -1,65 +1,28 @@
-const net = require('net');
-const readline = require('readline');
+const WebSocket = require('ws');
 
-const serverIP = '218.38.65.83'; // 서버의 IP 주소로 변경하세요
-const serverPort = 3567;
+const ws = new WebSocket('ws://localhost:3567');
 
-const client = new net.Socket();
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+ws.on('open', () => {
+    console.log('Connected to server');
 
-client.connect(serverPort, serverIP, () => {
-    console.log('Client connected to server');
-    startSendingRandomData();
-});
-
-function startSendingRandomData() {
-    rl.question('Enter channel number: ', (channel) => {
-        setInterval(() => {
-            const packetData = generateRandomPacketData();
-            sendChannelRequest(client, parseInt(channel), packetData.packet, packetData.targetId, packetData.message);
-        }, 1000);
-    });
-}
-
-client.on('data', (data) => {
-    const serverMessage = data.toString();
-    console.log('Received from server:', serverMessage);
-});
-
-client.on('close', () => {
-    console.log('Connection closed');
-    rl.close();
-});
-
-client.on('error', (err) => {
-    console.error('Error:', err.message);
-    rl.close();
-});
-
-function sendChannelRequest(client, channel, packet, targetId, message) {
-    const data2 = {
-        channel,
-        packet,
+    // 테스트용 메시지 전송
+    const message = {
+        channel: 1,
         target: 'all',
-        targetId: parseInt(targetId) || 0,
-        message
+        packet: 'test',
+        message: 'Hello, server!'
     };
 
-    client.write(JSON.stringify(data2));
-}
+    ws.send(JSON.stringify(message));
+});
 
-function generateRandomPacketData() {
-    const packets = ['call', 'throwball', 'moveleft', 'moveright'];
-    const randomPacket = packets[Math.floor(Math.random() * packets.length)];
-    const randomTargetId = Math.floor(Math.random() * 100);
-    const randomMessage = Math.random().toString(36).substring(7);
+ws.on('message', (data) => {
+    console.log('Received from server:', data);
 
-    return {
-        packet: randomPacket,
-        targetId: randomTargetId,
-        message: randomMessage
-    };
-}
+    // 연결 종료
+    ws.close();
+});
+
+ws.on('close', () => {
+    console.log('Connection closed');
+});
