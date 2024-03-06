@@ -13,8 +13,8 @@ server.on('connection', (client) => {
 
     client.on('data', (data) => {
         try {
-            const clientMessage = data.toString(); // 데이터를 문자열로 변환
             console.log('Received from client:', clientMessage);
+            const clientMessage = data.toString(); // 데이터를 문자열로 변환
             relayDataToClients(client, data);
         } catch (error) {
             console.error('Error handling data:', error);
