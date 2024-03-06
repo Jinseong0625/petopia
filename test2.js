@@ -27,10 +27,16 @@ function startClient() {
 
 function handleUserInput() {
     rl.question('Enter any packet name: ', (packet) => {
-        sendCustomPacket(client, packet);
-        handleUserInput(); // 계속해서 사용자 입력 받도록 재귀 호출
+        if (packet.trim() === '') {
+            // packet이 비어 있으면 재귀 호출
+            sendCustomPacket(client, packet);
+            handleUserInput();
+        } else {
+            rl.close();  // 비어 있지 않다면 입력 중단
+        }
     });
 }
+
 
 client.on('data', (data) => {
     const serverMessage = data.toString();
