@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 
-const ws = new WebSocket('ws://localhost:3567');
+const ws = new WebSocket('ws://218.38.65.83:3567');
 
 ws.on('open', () => {
     // 테스트 채널 생성
