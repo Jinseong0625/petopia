@@ -1,6 +1,7 @@
 const WebSocket = require('ws');
 
-const channels = {}; // 여러 채널을 저장하는 객체
+let channels = {}; // 여러 채널을 저장하는 객체
+let channelCounter = 1; // 채널 번호를 증가시키기 위한 카운터
 
 const wss = new WebSocket.Server({ port: 3567 });
 
@@ -17,15 +18,18 @@ wss.on('connection', (ws) => {
             // 여러 채널을 다루기 위해, 메시지의 채널 정보를 확인
             const channel = clientMessage.channel;
 
-            if (!channels[channel]) {
-                channels[channel] = new Set(); // 채널이 존재하지 않으면 생성
-                // 클라이언트에게 채널 생성 메시지 전송
-                ws.send(JSON.stringify({ channelCreated: channel }));
+            if (channel === -1) {
+                // 클라이언트가 -1을 보내면 새로운 채널을 생성하고 마스터 클라이언트로 설정
+                const newChannel = createChannel(ws);
+                ws.send(JSON.stringify({ channelCreated: newChannel }));
+                console.log(`Channel ${newChannel} created. Master client: ${ws}`);
+            } else {
+                // 채널이 이미 존재하는 경우 클라이언트를 해당 채널에 추가
+                addClientToChannel(channel, ws);
+                console.log(`Client added to channel ${channel}: ${ws}`);
             }
 
-            channels[channel].add(ws); // 해당 채널에 현재 클라이언트 추가
-
-            console.log(`Received from client on channel ${channel}:`, clientMessage);
+            // 이후 로직에서 채널을 활용하여 메시지를 전파하거나 특정 동작을 수행할 수 있음
             relayDataToClients(channel, ws, data);
         } catch (error) {
             console.error('Error handling data:', error);
@@ -38,6 +42,21 @@ wss.on('connection', (ws) => {
         removeClient(ws);
     });
 });
+
+function createChannel(masterClient) {
+    const newChannel = channelCounter++;
+    channels[newChannel] = new Set(); // 채널 생성 및 채널에 클라이언트 추가
+    channels[newChannel].add(masterClient);
+    return newChannel;
+}
+
+function addClientToChannel(channel, client) {
+    if (channels[channel]) {
+        channels[channel].add(client);
+    } else {
+        console.error(`Channel ${channel} does not exist.`);
+    }
+}
 
 function relayDataToClients(channel, senderClient, data) {
     if (channels[channel]) {
@@ -55,7 +74,22 @@ function removeClient(client) {
     // 클라이언트가 연결 해제될 때 해당 클라이언트를 모든 채널에서 제거
     Object.keys(channels).forEach((channel) => {
         channels[channel].delete(client);
+        // 채널이 비어있다면 삭제
+        if (channels[channel].size === 0) {
+            delete channels[channel];
+            console.log(`Channel ${channel} removed.`);
+        }
     });
 
     console.log('Client removed');
 }
+
+// 서버가 시작될 때마다 channels 객체 초기화
+function resetChannels() {
+    channels = {};
+    channelCounter = 1; // 채널 번호 초기화
+    console.log('Channels reset.');
+}
+
+// 서버 시작 시 초기화 수행
+resetChannels();
