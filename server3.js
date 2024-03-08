@@ -67,7 +67,7 @@ function relayDataToClients(channel, senderClient, data) {
         });
     }
 
-    console.log(`Data relayed to all clients on channel ${channel}:`, data);
+    console.log(`Data relayed to all clients on channel ${channel}:`, JSON.stringify(JSON.parse(data)));
 }
 
 function removeClient(client) {
