@@ -26,7 +26,7 @@ wss.on('connection', (ws) => {
                     channelCreated: newChannel,
                     message: `Channel: ${newChannel}`
                 }));
-                console.log(`Channel ${newChannel} created. Master client: ${ws}`);
+                console.log(`Channel ${newChannel} created. Master client: ${ws._socket.remoteAddress}`); // 수정된 부분
             } else {
                 // 채널이 이미 존재하는 경우 클라이언트를 해당 채널에 추가
                 addClientToChannel(channel, ws);
@@ -36,7 +36,7 @@ wss.on('connection', (ws) => {
                         message: `Joined Channel: ${channel}`
                     }));
                 }
-                console.log(`Client added to channel ${channel}: ${ws}`);
+                console.log(`Client added to channel ${channel}: ${ws._socket.remoteAddress}`); // 수정된 부분
             }
 
             // 이후 로직에서 채널을 활용하여 메시지를 전파하거나 특정 동작을 수행할 수 있음
@@ -45,6 +45,7 @@ wss.on('connection', (ws) => {
             console.error('Error handling data:', error);
         }
     });
+
 
     // 클라이언트 연결 해제 시
     ws.on('close', () => {
