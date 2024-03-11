@@ -24,7 +24,7 @@ wss.on('connection', (ws) => {
                 const newChannel = createChannel(ws);
                 ws.send(JSON.stringify({
                     channelCreated: newChannel,
-                    packet: data.packet,
+                    packet: clientMessage.packet,
                     message: newChannel
                 }));
                 console.log(`Channel ${newChannel} created. Master client: ${ws._socket.remoteAddress}`); // 수정된 부분
