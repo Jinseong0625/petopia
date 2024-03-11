@@ -77,8 +77,8 @@ function addClientToChannel(channel, client) {
 }
 
 function relayDataToClients(channel, senderClient, data) {
-    if (channels[channel]) {
-        channels[channel].forEach((client) => {
+    if (channels[channel] && channels[channel].clients) {
+        channels[channel].clients.forEach((client) => {
             if (client !== senderClient && client.readyState === WebSocket.OPEN) {
                 client.send(data);
             }
