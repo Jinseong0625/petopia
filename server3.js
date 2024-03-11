@@ -24,16 +24,23 @@ wss.on('connection', (ws) => {
             if (channel === -1) {
                 // 클라이언트가 -1을 보내면 새로운 채널을 생성하고 마스터 클라이언트로 설정
                 const newChannel = createChannel(ws);
-                ws.send(JSON.stringify({ channelCreated: newChannel }));
+                ws.send(JSON.stringify({
+                    channelCreated: newChannel,
+                    message: `Channel: ${newChannel}`
+                }));
                 if (debugMode) {
-                    console.log(`Channel ${newChannel} created. Master client: ${JSON.stringify(ws.upgradeReq)}`);
+                    console.log(`Channel ${newChannel} created. Master client: ${ws.upgradeReq.url}`);
                     console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
                 }
             } else {
                 // 채널이 이미 존재하는 경우 클라이언트를 해당 채널에 추가
                 addClientToChannel(channel, ws);
+                ws.send(JSON.stringify({
+                    channelJoined: channel,
+                    message: `Joined Channel: ${channel}`
+                }));
                 if (debugMode) {
-                    console.log(`[DEBUG] Client added to channel ${channel}: ${JSON.stringify(ws.upgradeReq)}`);
+                    console.log(`[DEBUG] Client added to channel ${channel}: ${ws.upgradeReq.url}`);
                     console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
                 }
             }
@@ -54,14 +61,14 @@ wss.on('connection', (ws) => {
 
 function createChannel(masterClient) {
     const newChannel = channelCounter++;
-    channels[newChannel] = new Set(); // 채널 생성 및 채널에 클라이언트 추가
-    channels[newChannel].add(masterClient);
+    channels[newChannel] = { clients: new Set() }; // 채널 생성 및 클라이언트 목록 추가
+    channels[newChannel].clients.add(masterClient);
     return newChannel;
 }
 
 function addClientToChannel(channel, client) {
     if (channels[channel]) {
-        channels[channel].add(client);
+        channels[channel].clients.add(client);
     } else {
         console.error(`Channel ${channel} does not exist.`);
     }
@@ -82,9 +89,9 @@ function relayDataToClients(channel, senderClient, data) {
 function removeClient(client) {
     // 클라이언트가 연결 해제될 때 해당 클라이언트를 모든 채널에서 제거
     Object.keys(channels).forEach((channel) => {
-        channels[channel].delete(client);
+        channels[channel].clients.delete(client);
         // 채널이 비어있다면 삭제
-        if (channels[channel].size === 0) {
+        if (channels[channel].clients.size === 0) {
             delete channels[channel];
             if (debugMode) console.log(`[DEBUG] Channel ${channel} removed.`);
         }
