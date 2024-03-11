@@ -28,7 +28,7 @@ wss.on('connection', (ws) => {
                     channelCreated: newChannel,
                     message: `Channel: ${newChannel}`
                 }));
-                console.log(`Channel ${newChannel} created. Master client: ${ws.upgradeReq.url}`);
+                console.log(`Channel ${newChannel} created. Master client: ${ws.url || 'unknown'}`);
                 console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
             } else {
                 // 채널이 이미 존재하는 경우 클라이언트를 해당 채널에 추가
@@ -42,7 +42,7 @@ wss.on('connection', (ws) => {
                     }));
                 }
                 
-                console.log(`[DEBUG] Client added to channel ${channel}: ${ws.upgradeReq.url}`);
+                console.log(`[DEBUG] Client added to channel ${channel}: ${ws.url || 'unknown'}`);
                 console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
             }
 
