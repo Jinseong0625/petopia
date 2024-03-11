@@ -6,7 +6,7 @@ let channelCounter = 1; // 채널 번호를 증가시키기 위한 카운터
 const wss = new WebSocket.Server({ port: 3567 });
 
 // 디버그 모드 활성화 여부
-const debugMode = true;
+const debugMode = false;
 
 console.log('Server listening on port 3567');
 
