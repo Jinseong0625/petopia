@@ -97,7 +97,8 @@ function removeClient(client) {
         }
     });
 
-    if (debugMode) console.log('[DEBUG] Client removed:', client);
+    //if (debugMode) console.log('[DEBUG] Client removed:', client);
+    console.log('Client removed:', client);
 }
 
 // 서버가 시작될 때마다 channels 객체 초기화
