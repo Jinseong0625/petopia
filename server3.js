@@ -5,6 +5,9 @@ let channelCounter = 1; // 채널 번호를 증가시키기 위한 카운터
 
 const wss = new WebSocket.Server({ port: 3567 });
 
+// 디버그 모드 활성화 여부
+const debugMode = true;
+
 console.log('Server listening on port 3567');
 
 wss.on('connection', (ws) => {
@@ -22,11 +25,11 @@ wss.on('connection', (ws) => {
                 // 클라이언트가 -1을 보내면 새로운 채널을 생성하고 마스터 클라이언트로 설정
                 const newChannel = createChannel(ws);
                 ws.send(JSON.stringify({ channelCreated: newChannel }));
-                console.log(`Channel ${newChannel} created. Master client: ${ws}`);
+                if (debugMode) console.log(`[DEBUG] Channel ${newChannel} created. Master client: ${ws}`);
             } else {
                 // 채널이 이미 존재하는 경우 클라이언트를 해당 채널에 추가
                 addClientToChannel(channel, ws);
-                console.log(`Client added to channel ${channel}: ${ws}`);
+                if (debugMode) console.log(`[DEBUG] Client added to channel ${channel}: ${ws}`);
             }
 
             // 이후 로직에서 채널을 활용하여 메시지를 전파하거나 특정 동작을 수행할 수 있음
@@ -67,7 +70,7 @@ function relayDataToClients(channel, senderClient, data) {
         });
     }
 
-    console.log(`Data relayed to all clients on channel ${channel}:`, JSON.stringify(JSON.parse(data)));
+    if (debugMode) console.log(`[DEBUG] Data relayed to all clients on channel ${channel}:`, JSON.stringify(JSON.parse(data)));
 }
 
 function removeClient(client) {
@@ -77,11 +80,11 @@ function removeClient(client) {
         // 채널이 비어있다면 삭제
         if (channels[channel].size === 0) {
             delete channels[channel];
-            console.log(`Channel ${channel} removed.`);
+            if (debugMode) console.log(`[DEBUG] Channel ${channel} removed.`);
         }
     });
 
-    console.log('Client removed');
+    if (debugMode) console.log('[DEBUG] Client removed:', client);
 }
 
 // 서버가 시작될 때마다 channels 객체 초기화
