@@ -30,11 +30,15 @@ wss.on('connection', (ws) => {
                 console.log(`Channel ${newChannel} created. Master client: ${ws._socket.remoteAddress}`); // 수정된 부분
             } else {
                 // 채널이 이미 존재하는 경우 클라이언트를 해당 채널에 추가
-                addClientToChannel(channel, ws);
-                if (channels[channel].clients.size > 1) {
-                    relayDataToClients(channel, ws, data);
+                if (channels[channel]) {
+                    addClientToChannel(channel, ws);
+                    if (channels[channel].size > 1) {
+                        relayDataToClients(channel, ws, data);
+                    }
+                    console.log(`Client added to channel ${channel}: ${ws._socket.remoteAddress}`);
+                } else {
+                    console.error(`Channel ${channel} does not exist.`);
                 }
-                console.log(`Client added to channel ${channel}: ${ws._socket.remoteAddress}`); // 수정된 부분
             }
 
             // 이후 로직에서 채널을 활용하여 메시지를 전파하거나 특정 동작을 수행할 수 있음
