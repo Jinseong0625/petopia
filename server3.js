@@ -26,14 +26,14 @@ wss.on('connection', (ws) => {
                 const newChannel = createChannel(ws);
                 ws.send(JSON.stringify({ channelCreated: newChannel }));
                 if (debugMode) {
-                    console.log(`Channel ${newChannel} created. Master client: ${ws.url}`);
+                    console.log(`Channel ${newChannel} created. Master client: ${ws.upgradeReq.url}`);
                     console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
                 }
             } else {
                 // 채널이 이미 존재하는 경우 클라이언트를 해당 채널에 추가
                 addClientToChannel(channel, ws);
                 if (debugMode) {
-                    console.log(`[DEBUG] Client added to channel ${channel}: ${ws.url}`);
+                    console.log(`[DEBUG] Client added to channel ${channel}: ${ws.upgradeReq.url}`);
                     console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
                 }
             }
