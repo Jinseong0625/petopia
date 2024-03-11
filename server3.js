@@ -25,11 +25,17 @@ wss.on('connection', (ws) => {
                 // 클라이언트가 -1을 보내면 새로운 채널을 생성하고 마스터 클라이언트로 설정
                 const newChannel = createChannel(ws);
                 ws.send(JSON.stringify({ channelCreated: newChannel }));
-                if (debugMode) console.log(`[DEBUG] Channel ${newChannel} created. Master client: ${ws}`);
+                if (debugMode) {
+                    console.log(`[DEBUG] Channel ${newChannel} created. Master client: ${ws}`);
+                    console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
+                }
             } else {
                 // 채널이 이미 존재하는 경우 클라이언트를 해당 채널에 추가
                 addClientToChannel(channel, ws);
-                if (debugMode) console.log(`[DEBUG] Client added to channel ${channel}: ${ws}`);
+                if (debugMode) {
+                    console.log(`[DEBUG] Client added to channel ${channel}: ${ws}`);
+                    console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
+                }
             }
 
             // 이후 로직에서 채널을 활용하여 메시지를 전파하거나 특정 동작을 수행할 수 있음
