@@ -35,7 +35,7 @@ wss.on('connection', (ws) => {
                 addClientToChannel(channel, ws);
                 
                 // 첫 번째 클라이언트가 채널에 접속했을 때에만 메시지 전송
-                if (channels[channel].clients.size === 1) {
+                if (channels[channel].clients.size > 1) {
                     ws.send(JSON.stringify({
                         channelJoined: channel,
                         message: `Joined Channel: ${channel}`
