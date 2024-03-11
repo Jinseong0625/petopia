@@ -28,10 +28,12 @@ wss.on('connection', (ws) => {
                     channelCreated: newChannel,
                     message: `Channel: ${newChannel}`
                 }));
-                if (debugMode) {
+                /*if (debugMode) {
                     console.log(`Channel ${newChannel} created. Master client: ${ws.upgradeReq.url}`);
                     console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
-                }
+                }*/
+                console.log(`Channel ${newChannel} created. Master client: ${ws.upgradeReq.url}`);
+                console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
             } else {
                 // 채널이 이미 존재하는 경우 클라이언트를 해당 채널에 추가
                 addClientToChannel(channel, ws);
@@ -39,10 +41,12 @@ wss.on('connection', (ws) => {
                     channelJoined: channel,
                     message: `Joined Channel: ${channel}`
                 }));
-                if (debugMode) {
+                /*if (debugMode) {
                     console.log(`[DEBUG] Client added to channel ${channel}: ${ws.upgradeReq.url}`);
                     console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
-                }
+                }*/
+                console.log(`[DEBUG] Client added to channel ${channel}: ${ws.upgradeReq.url}`);
+                console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
             }
 
             // 이후 로직에서 채널을 활용하여 메시지를 전파하거나 특정 동작을 수행할 수 있음
@@ -83,7 +87,8 @@ function relayDataToClients(channel, senderClient, data) {
         });
     }
 
-    if (debugMode) console.log(`[DEBUG] Data relayed to all clients on channel ${channel}:`, JSON.stringify(JSON.parse(data)));
+    //if (debugMode) console.log(`[DEBUG] Data relayed to all clients on channel ${channel}:`, JSON.stringify(JSON.parse(data)));
+    console.log(`[DEBUG] Data relayed to all clients on channel ${channel}:`, JSON.stringify(JSON.parse(data)));
 }
 
 function removeClient(client) {
