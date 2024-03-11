@@ -28,23 +28,20 @@ wss.on('connection', (ws) => {
                     channelCreated: newChannel,
                     message: `Channel: ${newChannel}`
                 }));
-                /*if (debugMode) {
-                    console.log(`Channel ${newChannel} created. Master client: ${ws.upgradeReq.url}`);
-                    console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
-                }*/
                 console.log(`Channel ${newChannel} created. Master client: ${ws.upgradeReq.url}`);
                 console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
             } else {
                 // 채널이 이미 존재하는 경우 클라이언트를 해당 채널에 추가
                 addClientToChannel(channel, ws);
-                ws.send(JSON.stringify({
-                    channelJoined: channel,
-                    message: `Joined Channel: ${channel}`
-                }));
-                /*if (debugMode) {
-                    console.log(`[DEBUG] Client added to channel ${channel}: ${ws.upgradeReq.url}`);
-                    console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
-                }*/
+                
+                // 첫 번째 클라이언트가 채널에 접속했을 때에만 메시지 전송
+                if (channels[channel].clients.size === 1) {
+                    ws.send(JSON.stringify({
+                        channelJoined: channel,
+                        message: `Joined Channel: ${channel}`
+                    }));
+                }
+                
                 console.log(`[DEBUG] Client added to channel ${channel}: ${ws.upgradeReq.url}`);
                 console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
             }
@@ -55,6 +52,7 @@ wss.on('connection', (ws) => {
             console.error('Error handling data:', error);
         }
     });
+
 
     // 클라이언트 연결 해제 시
     ws.on('close', () => {
