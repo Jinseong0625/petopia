@@ -24,17 +24,14 @@ wss.on('connection', (ws) => {
                 const newChannel = createChannel(ws);
                 ws.send(JSON.stringify({
                     channelCreated: newChannel,
-                    message: `Channel: ${newChannel}`
+                    message: newChannel
                 }));
                 console.log(`Channel ${newChannel} created. Master client: ${ws._socket.remoteAddress}`); // 수정된 부분
             } else {
                 // 채널이 이미 존재하는 경우 클라이언트를 해당 채널에 추가
                 addClientToChannel(channel, ws);
                 if (channels[channel].clients.size > 1) {
-                    ws.send(JSON.stringify({
-                        channelJoined: channel,
-                        message: `Joined Channel: ${channel}`
-                    }));
+                    relayDataToClients(channel, ws, data);
                 }
                 console.log(`Client added to channel ${channel}: ${ws._socket.remoteAddress}`); // 수정된 부분
             }
@@ -73,7 +70,10 @@ function relayDataToClients(channel, senderClient, data) {
     if (channels[channel]) {
         channels[channel].forEach((client) => {
             if (client !== senderClient && client.readyState === WebSocket.OPEN) {
-                client.send(data);
+                client.send(JSON.stringify({
+                    channelJoined: channel,
+                    message: channel
+                }));
             }
         });
     }
