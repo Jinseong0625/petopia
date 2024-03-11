@@ -93,7 +93,8 @@ function removeClient(client) {
         // 채널이 비어있다면 삭제
         if (channels[channel].clients.size === 0) {
             delete channels[channel];
-            if (debugMode) console.log(`[DEBUG] Channel ${channel} removed.`);
+            //if (debugMode) console.log(`[DEBUG] Channel ${channel} removed.`);
+            console.log(`[DEBUG] Channel ${channel} removed.`);
         }
     });
 
