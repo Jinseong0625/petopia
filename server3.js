@@ -14,44 +14,44 @@ wss.on('connection', (ws) => {
     console.log('Client connected');
 
     // 클라이언트로부터 메시지 수신
-    ws.on('message', (data) => {
-        try {
-            const clientMessage = JSON.parse(data);
+ws.on('message', (data) => {
+    try {
+        const clientMessage = JSON.parse(data);
 
-            // 여러 채널을 다루기 위해, 메시지의 채널 정보를 확인
-            const channel = clientMessage.channel;
+        // 여러 채널을 다루기 위해, 메시지의 채널 정보를 확인
+        const channel = clientMessage.channel;
 
-            if (channel === -1) {
-                // 클라이언트가 -1을 보내면 새로운 채널을 생성하고 마스터 클라이언트로 설정
-                const newChannel = createChannel(ws);
+        if (channel === -1) {
+            // 클라이언트가 -1을 보내면 새로운 채널을 생성하고 마스터 클라이언트로 설정
+            const newChannel = createChannel(ws);
+            ws.send(JSON.stringify({
+                channelCreated: newChannel,
+                message: `Channel: ${newChannel}`
+            }));
+            console.log(`Channel ${newChannel} created. Master client: ${ws.upgradeReq.url}`);
+            console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
+        } else {
+            // 채널이 이미 존재하는 경우 클라이언트를 해당 채널에 추가
+            addClientToChannel(channel, ws);
+            
+            // 첫 번째 클라이언트가 채널에 접속했을 때에만 메시지 전송
+            if (channels[channel].clients.size > 1) {
                 ws.send(JSON.stringify({
-                    channelCreated: newChannel,
-                    message: `Channel: ${newChannel}`
+                    channelJoined: channel,
+                    message: `Joined Channel: ${channel}`
                 }));
-                console.log(`Channel ${newChannel} created. Master client: ${ws.url || 'unknown'}`);
-                console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
-            } else {
-                // 채널이 이미 존재하는 경우 클라이언트를 해당 채널에 추가
-                addClientToChannel(channel, ws);
-                
-                // 첫 번째 클라이언트가 채널에 접속했을 때에만 메시지 전송
-                if (channels[channel].clients.size > 1) {
-                    ws.send(JSON.stringify({
-                        channelJoined: channel,
-                        message: `Joined Channel: ${channel}`
-                    }));
-                }
-                
-                console.log(`[DEBUG] Client added to channel ${channel}: ${ws.url || 'unknown'}`);
-                console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
             }
-
-            // 이후 로직에서 채널을 활용하여 메시지를 전파하거나 특정 동작을 수행할 수 있음
-            relayDataToClients(channel, ws, data);
-        } catch (error) {
-            console.error('Error handling data:', error);
+            
+            console.log(`[DEBUG] Client added to channel ${channel}: ${ws.upgradeReq.url}`);
+            console.log(`[DEBUG] Channels: ${JSON.stringify(channels)}`);
         }
-    });
+
+        // 이후 로직에서 채널을 활용하여 메시지를 전파하거나 특정 동작을 수행할 수 있음
+        relayDataToClients(channel, ws, data);
+    } catch (error) {
+        console.error('Error handling data:', error);
+    }
+});
 
 
     // 클라이언트 연결 해제 시
@@ -77,8 +77,8 @@ function addClientToChannel(channel, client) {
 }
 
 function relayDataToClients(channel, senderClient, data) {
-    if (channels[channel] && channels[channel].clients) {
-        channels[channel].clients.forEach((client) => {
+    if (channels[channel]) {
+        channels[channel].forEach((client) => {
             if (client !== senderClient && client.readyState === WebSocket.OPEN) {
                 client.send(data);
             }
