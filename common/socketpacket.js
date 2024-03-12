@@ -1,4 +1,4 @@
-const eScoketPacket = {
+const eSocketPacket = {
     none : 0,
     create_channel : 1,
     join_channel : 2,
