@@ -22,24 +22,22 @@ wss.on('connection', (ws) => {
             const packet = clientMessage.packet;
             const target = clientMessage.target;
     
-            switch (target) {
-                case eSendTarget.server: // 타겟 0
+            switch (packet) {
+                case eSocketPacket.create_channel: // packet = 1 이건 채널을 생성하려고 하는것이고 
                     handleTargetZero(ws,packet);
                     break;
     
-                case eSendTarget.all: // 타겟 1
+                case eSocketPacket.join_channel: // packet = 2 이건 생성되어 있는 채널에 클라를 추가하는 것이고
                     handleTargetOne(channel, ws, data, packet);
                     break;
                 
-                case eSendTarget.master: // 타겟 2
+                case eSocketPacket.join_world: //packet = 3 이건 world로 클라를 보내는 역할을 하는것이고
                     handleTargetOne(channel, ws, data, packet);
                     break;
                 
-                case eSendTarget.anothers: // 타겟 3
+                case eSocketPacket.exit_world: // packet = 4 이건 월드를 나가는 역할이다.
                     break;
 
-                case eSendTarget.target: // 타겟 4
-                    break;
                 // 다른 패킷 추가 여기서 내가 볼땐  
     
                 default:
