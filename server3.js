@@ -156,11 +156,11 @@ function relayDataToClients(channel, senderClient, data) {
     if (channels[channel]) {
         channels[channel].forEach((client) => {
             if (client !== senderClient && client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(JSON.parse(data))); // 클라이언트에서 받은 데이터를 JSON으로 파싱하여 브로드캐스팅
-                /*client.send(JSON.stringify({
+                //client.send(JSON.stringify(JSON.parse(data))); // 클라이언트에서 받은 데이터를 JSON으로 파싱하여 브로드캐스팅
+                client.send(JSON.stringify({
                     channelJoined: channel,
                     message: channel
-                }));*/
+                }));
             }
         });
     }
