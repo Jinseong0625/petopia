@@ -1,35 +1,63 @@
-const WebSocket = require('ws');
+// 클라이언트 코드 일부
 
-const ws = new WebSocket('ws://218.38.65.83:3567');
+const net = require('net');
+const readline = require('readline');
 
-ws.on('open', () => {
-    // 채널 생성 요청 보내기
-    const createChannelMessage = {
-        channel: -1,
-        packet: 0,  // enum에서 none에 해당하는 값
-        message: 'Creating a new channel',
-    };
-    ws.send(JSON.stringify(createChannelMessage));
+const serverIP = '218.38.65.83'; // 서버의 IP 주소로 변경하세요
+const serverPort = 3567;
+
+const client = new net.Socket();
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
 });
 
-ws.on('message', (data) => {
-    try {
-        const serverResponse = JSON.parse(data);
-        if (serverResponse.channelCreated) {
-            const channel = serverResponse.channelCreated;
-            console.log(`Channel ${channel} created. Sending test message...`);
+client.connect(serverPort, serverIP, () => {
+    console.log('Client connected to server');
 
-            // 테스트 데이터 전송
-            const testDataMessage = {
-                channel: channel,
-                target: 'all',
-                targetId: 0,
-                packet: 1,  // enum에서 call에 해당하는 값
-                message: 'Test message from client',
-            };
-            ws.send(JSON.stringify(testDataMessage));
+    rl.question('Enter channel number: ', (channel) => {
+        rl.question('Enter "join" or "leave": ', (packet) => {
+            sendChannelRequest(client, parseInt(channel), packet.toLowerCase());
+            rl.close();
+        });
+    });
+});
+
+client.on('data', (data) => {
+    const serverMessage = data.toString();
+    console.log('Received from server:', serverMessage);
+
+    try {
+        const serverData = JSON.parse(serverMessage);
+        if (serverData.log) {
+            console.log(serverData.log);
         }
+
+        // 여기에 서버로부터 받은 데이터를 처리하는 로직 추가
+
     } catch (error) {
-        console.error('Error handling server response:', error);
+        console.error('Error parsing server data:', error);
     }
 });
+
+client.on('close', () => {
+    console.log('Connection closed');
+    rl.close();
+});
+
+client.on('error', (err) => {
+    console.error('Error:', err.message);
+    rl.close();
+});
+
+function sendChannelRequest(client, channel, packet) {
+    // 패킷으로 변경하고 타겟과 타겟ID 추가
+    const data = {
+        channel,
+        packet,
+        target: 'all', // 타겟 정보 추가 (임시값으로 'all' 설정)
+        targetId: 0 // 타겟 ID 정보 추가 (임시값으로 0 설정)
+    };
+
+    client.write(JSON.stringify(data));
+}

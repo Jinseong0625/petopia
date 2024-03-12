@@ -21,7 +21,7 @@ wss.on('connection', (ws) => {
             const packet = clientMessage.packet;
 
             if (packet === 1) {
-                // 클라이언트가 1을 보내면 새로운 채널을 생성하고 마스터 클라이언트로 설정
+                // 클라이언트가 packet 1을 보내면 새로운 채널을 생성하고 마스터 클라이언트로 설정
                 const newChannel = createChannel(ws);
                 ws.send(JSON.stringify({
                     channelCreated: newChannel,
