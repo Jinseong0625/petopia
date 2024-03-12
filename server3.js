@@ -32,6 +32,7 @@ wss.on('connection', (ws) => {
                     break;
                 
                 case eSendTarget.master: // 타겟 2
+                    handleTargetOne(channel, ws, data, packet);
                     break;
                 
                 case eSendTarget.anothers: // 타겟 3
