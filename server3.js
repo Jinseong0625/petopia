@@ -13,7 +13,7 @@ console.log('Server listening on port 3567');
 wss.on('connection', (ws) => {
     console.log('Client connected');
 
-    ws.on('message', (data) => {
+   /* ws.on('message', (data) => {
         try {
             const clientMessage = JSON.parse(data);
     
@@ -47,10 +47,10 @@ wss.on('connection', (ws) => {
         } catch (error) {
             console.error('Error handling data:', error);
         }
-    });
+    });*/
 
     // 클라이언트로부터 메시지 수신
-    /*ws.on('message', (data) => {
+    ws.on('message', (data) => {
         try {
             const clientMessage = JSON.parse(data);
 
@@ -93,7 +93,7 @@ wss.on('connection', (ws) => {
         console.log('Client disconnected');
         removeClient(ws);
         logConnectedClients();
-    });*/
+    });
 });
 
 function createChannel(masterClient) {
