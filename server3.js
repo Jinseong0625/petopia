@@ -19,7 +19,6 @@ wss.on('connection', (ws) => {
             // 여러 채널을 다루기 위해, 메시지의 채널 정보를 확인
             const channel = clientMessage.channel;
             const packet = clientMessage.packet;
-            const sendTarget = clientMessage.target || 2;
 
             if (packet === 1) {
                 // 클라이언트가 packet 1을 보내면 새로운 채널을 생성하고 마스터 클라이언트로 설정
@@ -43,33 +42,6 @@ wss.on('connection', (ws) => {
                 }
             }
 
-            if (packet === 3) {
-                // 패킷 3은 채팅 메시지
-                if (channels[channel]) {
-                    const senderInfo = {
-                        channel: channel,
-                        sender: ws,
-                        message: clientMessage.message
-                    };
-    
-                    switch (sendTarget) {
-                        case 2: // eSendTarget.all
-                            relayDataToClients(channel, ws, senderInfo);
-                            break;
-                        case 3: // eSendTarget.master
-                            relayDataToClients(channel, ws, senderInfo);
-                            break;
-                        case 4: // eSendTarget.anothers
-                            relayDataToOthers(channel, ws, senderInfo);
-                            break;
-                        case 5: // eSendTarget.target
-                            sendToTarget(channel, ws, senderInfo, 3); // 예시로 eSendTarget.master
-                            break;
-                        default:
-                            console.error(`Invalid sendTarget: ${sendTarget}`);
-                    }
-                }
-            }
 
             relayDataToClients(channel, ws, data);
         } catch (error) {
@@ -147,30 +119,6 @@ function resetChannels() {
     channels = {};
     channelCounter = 1; // 채널 번호 초기화
     console.log('Channels reset.');
-}
-
-// 특정 대상에게 메시지 전송
-function sendToTarget(channel, sender, message, target) {
-    if (channels[channel]) {
-        channels[channel].forEach((client) => {
-            if (client !== sender && client.readyState === WebSocket.OPEN) {
-                if (client === channels[channel].masterClient) {
-                    client.send(JSON.stringify(message));
-                }
-            }
-        });
-    }
-}
-
-// 자신을 제외한 모든 클라이언트에게 메시지 전송
-function relayDataToOthers(channel, sender, message) {
-    if (channels[channel]) {
-        channels[channel].forEach((client) => {
-            if (client !== sender && client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(message));
-            }
-        });
-    }
 }
 
 // 서버 시작 시 초기화 수행
