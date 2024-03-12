@@ -61,12 +61,15 @@ function createChannel(masterClient) {
     const newChannel = channelCounter++;
     channels[newChannel] = new Set(); // 채널 생성 및 채널에 클라이언트 추가
     channels[newChannel].add(masterClient);
+    console.log(`Channel ${newChannel} created. Master client: ${ws._socket.remoteAddress}`); // 수정된 부분
+    logChannelInfo(newChannel);
     return newChannel;
 }
 
 function addClientToChannel(channel, client) {
     if (channels[channel]) {
         channels[channel].add(client);
+        logChannelInfo(channel);
     } else {
         console.error(`Channel ${channel} does not exist.`);
     }
@@ -95,10 +98,16 @@ function removeClient(client) {
         if (channels[channel].size === 0) {
             delete channels[channel];
             console.log(`Channel ${channel} removed.`);
+        } else {
+            logChannelInfo(channel); // 추가된 부분
         }
     });
 
     console.log('Client removed');
+}
+
+function logChannelInfo(channel) {
+    console.log(`Channel ${channel} has ${channels[channel].size} client(s).`);
 }
 
 // 서버가 시작될 때마다 channels 객체 초기화
