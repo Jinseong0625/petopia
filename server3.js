@@ -19,8 +19,8 @@ wss.on('connection', (ws) => {
             // 여러 채널을 다루기 위해, 메시지의 채널 정보를 확인
             const channel = clientMessage.channel;
 
-            if (channel === -1) {
-                // 클라이언트가 -1을 보내면 새로운 채널을 생성하고 마스터 클라이언트로 설정
+            if (channel === 1) {
+                // 클라이언트가 1을 보내면 새로운 채널을 생성하고 마스터 클라이언트로 설정
                 const newChannel = createChannel(ws);
                 ws.send(JSON.stringify({
                     channelCreated: newChannel,
