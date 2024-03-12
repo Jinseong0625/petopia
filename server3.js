@@ -54,6 +54,7 @@ wss.on('connection', (ws) => {
     ws.on('close', () => {
         console.log('Client disconnected');
         removeClient(ws);
+        logConnectedClients();
     });
 });
 
@@ -108,6 +109,9 @@ function removeClient(client) {
 
 function logChannelInfo(channel) {
     console.log(`Channel ${channel} has ${channels[channel].size} client(s).`);
+}
+function logConnectedClients() {
+    console.log('Connected clients:', wss.clients.size);
 }
 
 // 서버가 시작될 때마다 channels 객체 초기화
