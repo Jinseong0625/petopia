@@ -61,7 +61,7 @@ function createChannel(masterClient) {
     const newChannel = channelCounter++;
     channels[newChannel] = new Set(); // 채널 생성 및 채널에 클라이언트 추가
     channels[newChannel].add(masterClient);
-    console.log(`Channel ${newChannel} created. Master client: ${ws._socket.remoteAddress}`); // 수정된 부분
+    console.log(`Channel ${newChannel} created. Master client: ${masterClient._socket.remoteAddress}`); // 수정된 부분
     logChannelInfo(newChannel);
     return newChannel;
 }
