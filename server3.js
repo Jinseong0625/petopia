@@ -129,7 +129,7 @@ function handleTargetZero(ws, packet) {
 }
 
 function handleTargetOne(channel, ws, data, packet) {
-    if (packet === eSocketPacket.join_world) {
+    if (packet === eSocketPacket.join_channel) {
         // 클라이언트가 타겟 1 패킷을 보내면 해당 채널에 클라이언트를 추가
         if (channels[channel]) {
             addClientToChannel(channel, ws);
