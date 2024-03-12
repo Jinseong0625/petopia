@@ -67,7 +67,6 @@ function createChannel(masterClient) {
 function addClientToChannel(channel, client) {
     if (channels[channel]) {
         channels[channel].add(client);
-        console.log(`Client added to channel ${channel}: ${client._socket.remoteAddress}`);
     } else {
         console.error(`Channel ${channel} does not exist.`);
     }
