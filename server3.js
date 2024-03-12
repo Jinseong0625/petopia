@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
-const {eSocketPacket} = require('../petopia/common/socketpacket.js');
-const {eSendTarget} = require('../petopia/common/socketTarget.js');
+const { eSocketPacket } = require('../petopia/common/socketpacket.js');
+const { eSendTarget } = require('../petopia/common/socketTarget.js');
 
 let channels = {}; // 여러 채널을 저장하는 객체
 let channelCounter = 1; // 채널 번호를 증가시키기 위한 카운터
