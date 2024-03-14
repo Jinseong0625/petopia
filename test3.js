@@ -60,4 +60,22 @@ function handleJoinChannel(channel, ws, data) {
     }
 }
 
+function addClientToChannel(channel, client) {
+    if (channels[channel]) {
+        channels[channel].add(client);
+        logChannelInfo(channel);
+    } else {
+        console.error(`Channel ${channel} does not exist.`);
+    }
+}
+
+function logChannelInfo(channel) {
+    if (channels[channel]) {
+        console.log(`Channel ${channel} has ${channels[channel].size} client(s).`);
+    } else {
+        console.log(`Channel ${channel} does not exist.`);
+    }
+}
+
+
 rl.prompt();
