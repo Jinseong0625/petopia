@@ -47,12 +47,16 @@ rl.on('line', (input) => {
 
         // 데이터 전송
         ws.send(JSON.stringify(testData));
+
+        // 클라이언트 추가 로그 출력
+        console.log(`Client added to channel ${testData.channel}: ${newClient.nickname}`);
+
+        // 입력 인터페이스 재시작
+        rl.prompt();
     } else {
         console.log('Invalid input. Please enter a valid number.');
+        rl.prompt();
     }
-
-    // 입력 인터페이스를 종료합니다.
-    rl.close();
 });
 
 // 서버로부터의 메시지 수신 이벤트 핸들러
