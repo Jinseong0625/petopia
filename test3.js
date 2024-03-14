@@ -34,4 +34,30 @@ rl.on('line', (input) => {
     }
 });
 
+function handleJoinChannel(channel, ws, data) {
+    try {
+        const clientMessage = JSON.parse(data.message);
+        const newClient = {
+            midx: clientMessage.midx,
+            nickname: clientMessage.nickname,
+            inventory: clientMessage.inventory,
+            positionToWorld: clientMessage.positionToWorld,
+            mbti: clientMessage.mbti,
+            sexual: clientMessage.sexual,
+            dog: clientMessage.dog,
+            itemUserInfo: clientMessage.itemUserInfo
+        };
+
+        // 새로운 클라이언트를 채널에 추가
+        addClientToChannel(channel, newClient);
+
+        // 채널에 있는 모든 클라이언트에게 새로운 클라이언트 정보를 전송
+        relayDataToClients(channel, ws, data);
+
+        console.log(`New client added to channel ${channel}:`, newClient);
+    } catch (error) {
+        console.error('Error handling join channel:', error);
+    }
+}
+
 rl.prompt();
