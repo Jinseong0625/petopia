@@ -1,15 +1,30 @@
 const readline = require('readline');
+const WebSocket = require('ws');
 
+// 웹 소켓 서버의 주소와 포트를 지정합니다.
+const serverAddress = 'ws://218.38.65.83:3567';
+
+// 웹 소켓 클라이언트 생성
+const ws = new WebSocket(serverAddress);
+
+// 입력 인터페이스 생성
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
+// 입력창에 메시지를 출력합니다.
 rl.setPrompt('Enter a number to add a new client to the channel: ');
+rl.prompt();
 
+// 사용자가 입력한 숫자를 받아서 처리하는 이벤트 핸들러
 rl.on('line', (input) => {
+    // 입력받은 숫자를 정수로 변환합니다.
     const number = parseInt(input.trim());
+
+    // 숫자가 유효한지 확인합니다.
     if (!isNaN(number)) {
+        // 새로운 클라이언트 데이터 생성
         const newClient = {
             midx: number,
             nickname: `Newto${number}`,
@@ -20,62 +35,37 @@ rl.on('line', (input) => {
             dog: { instanceID: 0 },
             itemUserInfo: { instanceID: 0 }
         };
-        const message = {
-            channel: 3, // 채널 번호를 지정
-            target: 0, // 타겟 번호
-            targetId: 0, // 타겟 ID
-            packet: 2, // 패킷 번호
-            message: JSON.stringify(newClient) // 클라이언트 데이터를 JSON 문자열로 변환하여 전송
+
+        // 데이터를 서버로 전송합니다.
+        const testData = {
+            channel: 3,
+            target: 0,
+            targetId: 0,
+            packet: 2,
+            message: JSON.stringify(newClient)
         };
-        // 입력한 숫자를 기반으로 새로운 클라이언트를 채널에 추가
-        handleJoinChannel(message.channel, null, message);
+
+        // 데이터 전송
+        ws.send(JSON.stringify(testData));
     } else {
         console.log('Invalid input. Please enter a valid number.');
     }
+
+    // 입력 인터페이스를 종료합니다.
+    rl.close();
 });
 
-function handleJoinChannel(channel, ws, data) {
-    try {
-        const clientMessage = JSON.parse(data.message);
-        const newClient = {
-            midx: clientMessage.midx,
-            nickname: clientMessage.nickname,
-            inventory: clientMessage.inventory,
-            positionToWorld: clientMessage.positionToWorld,
-            mbti: clientMessage.mbti,
-            sexual: clientMessage.sexual,
-            dog: clientMessage.dog,
-            itemUserInfo: clientMessage.itemUserInfo
-        };
+// 서버로부터의 메시지 수신 이벤트 핸들러
+ws.on('message', (data) => {
+    console.log('Received message from server:', data);
+});
 
-        // 새로운 클라이언트를 채널에 추가
-        addClientToChannel(channel, newClient);
+// 연결 종료 이벤트 핸들러
+ws.on('close', () => {
+    console.log('Connection closed');
+});
 
-        // 채널에 있는 모든 클라이언트에게 새로운 클라이언트 정보를 전송
-        relayDataToClients(channel, ws, data);
-
-        console.log(`New client added to channel ${channel}:`, newClient);
-    } catch (error) {
-        console.error('Error handling join channel:', error);
-    }
-}
-
-function addClientToChannel(channel, client) {
-    if (channels[channel]) {
-        channels[channel].add(client);
-        logChannelInfo(channel);
-    } else {
-        console.error(`Channel ${channel} does not exist.`);
-    }
-}
-
-function logChannelInfo(channel) {
-    if (channels[channel]) {
-        console.log(`Channel ${channel} has ${channels[channel].size} client(s).`);
-    } else {
-        console.log(`Channel ${channel} does not exist.`);
-    }
-}
-
-
-rl.prompt();
+// 에러 발생 이벤트 핸들러
+ws.on('error', (error) => {
+    console.error('Error:', error.message);
+});
