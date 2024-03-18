@@ -8,14 +8,14 @@ use Firebase\JWT\JWT;
 class DBHandler extends DBConnector{
 
     // 간단한 회원가입
-    public function sp_insert_Member($UUID,$ID,$PW)
+    public function sp_insert_Member($UUID,$ID,$PW,$nickname,$sexual,$mbti)
     {
         $error = "E0000";
 
-        if(!($stmt = $this->db->prepare("CALL sp_insert_Member(?,?,?)"))){
+        if(!($stmt = $this->db->prepare("CALL sp_insert_Member(?,?,?,?,?,?)"))){
             $error = "E1000";
         }
-        if(!$stmt->bind_param("sss", $UUID,$ID,$PW)){
+        if(!$stmt->bind_param("ssssis", $UUID,$ID,$PW,$nickname,$sexual,$mbti)){
             $error = "E1001";
         }
         if(!$stmt->execute()){
