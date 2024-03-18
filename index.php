@@ -15,6 +15,49 @@ $api = new DBHandler();
 
 session_start();
 
+$app->get('/image', function ($request, $response, $args) use($api) {
+	$row = $api->sp_select_image();
+	$response->getBody()->write($row);
+	return $response;
+});
+
+$app->post('/member', function ($request, $response, $args) use($api) 
+{
+	$params = $request->getParsedBody();
+	$UUID = $params['UUID'];
+	$ID = $params['ID'];
+	$PW = $params['PW'];
+	if($UUID == null)
+	{
+		$json_data = array
+        (
+            "error" => "E1003",
+            "data" => ""
+        );
+
+		$row = json_encode($json_data);
+	}
+	else
+	{
+		$row = $api->sp_insert_Member($UUID,$ID,$PW);
+
+		if (is_array($row)) {
+			$row = json_encode($row);
+		}
+	}
+	
+	$response->getBody()->write($row);
+	return $response;
+});
+
+$app->get('/member/{midx}', function ($request, $response, $args) use($api) 
+{	
+	$midx = $request->getAttribute('midx');
+	$row = $api->sp_select_Member($midx);
+	$response->getBody()->write($row);
+	return $response;
+});
+
 $app->run();
 
 ?>
