@@ -17,7 +17,7 @@ $api = new DBHandler();
 $app->addBodyParsingMiddleware();
 
 // Set base path
-$app->setBasePath("/api/v1");
+$app->setBasePath("/v1");
 
 session_start();
 
