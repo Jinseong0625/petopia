@@ -13,6 +13,12 @@ use DBManager\DBHandler;
 $app = AppFactory::create();
 $api = new DBHandler();
 
+// Add body parsing middleware
+$app->addBodyParsingMiddleware();
+
+// Set base path
+$app->setBasePath("/api");
+
 session_start();
 
 $app->get('/image', function ($request, $response, $args) use($api) {
