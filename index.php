@@ -17,7 +17,7 @@ $api = new DBHandler();
 $app->addBodyParsingMiddleware();
 
 // Set base path
-$app->setBasePath("/v1");
+$app->setBasePath("/petopia");
 
 session_start();
 
