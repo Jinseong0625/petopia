@@ -28,7 +28,7 @@ wss.on('connection', (ws) => {
                     handlePacketZero(ws, packet);
                     break;
                 case eSocketPacket.join_channel: // 채널 참여
-                    handlePacketOne(channel, ws, data, packet);
+                    data = handlePacketOne(channel, ws, data, packet);
                     break;
                 case eSocketPacket.join_world: // world로 클라 전송
                     handlePackettwo(channel, ws, data, packet);
@@ -36,12 +36,13 @@ wss.on('connection', (ws) => {
                 case eSocketPacket.exit_world: // 월드 나가기
                     handlePacketthree(channel, ws, data, packet);
                     break;
-                default:
-                    handleDefaultPacket(channel, ws, data);
             }
+            
+
         } catch (error) {
             console.error('Error handling data:', error);
         }
+        handleDefaultPacket(channel, ws, data);
     });
 
     // 클라이언트 연결 해제 시
@@ -51,6 +52,45 @@ wss.on('connection', (ws) => {
         logConnectedClients();
     });
 });
+
+/*function SendTarget(ws, data)
+{
+    switch(data.target)
+    {
+        case eSendTarget.all:
+            {
+                clients.forEach(obj => obj.send(data));
+            }
+            break;
+        case eSendTarget.anothers:
+            {
+                clients.forEach(obj => 
+                    {
+                        if(obj != ws)
+                            obj.send(data)
+                    });
+            }
+            break;
+        case eSendTarget.master:
+            {
+                clients.forEach(obj => 
+                    {
+                        if(obj.isMaster)
+                            obj.send(data)
+                    });
+            }
+            break;
+        case eSendTarget.target:
+            {
+                clients.forEach(obj => 
+                    {
+                        if(data.targetClientId == obj.id)
+                            obj.send(data)
+                    });
+            }
+            break;
+    }
+}*/
 
 // 채널 생성 함수
 function createChannel(masterClient) {
@@ -88,7 +128,7 @@ function handlePacketZero(ws, packet) {
 }
 
 // 패킷 핸들러 - 채널 참여
-function handlePacketOne(channel, ws, data, packet) {
+function handlePacketOne(channel, ws, data, packet)  {
     if (packet === eSocketPacket.join_channel) {
         // 채널에 클라이언트 추가
         if (channels[channel]) {
@@ -105,6 +145,7 @@ function handlePacketOne(channel, ws, data, packet) {
     } else {
         console.error('Invalid packet for target 1.');
     }
+    return data;
 }
 
 // 패킷 핸들러 - world로 클라 전송
@@ -174,10 +215,7 @@ function relayDataToClients(channel, senderClient, data) {
     if (channels[channel]) {
         channels[channel].forEach((client) => {
             if (client !== senderClient && client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({
-                    channelJoined: channel,
-                    message: channel
-                }));
+                client.send(data);
             }
         });
     }
