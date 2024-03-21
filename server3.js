@@ -25,7 +25,7 @@ wss.on('connection', (ws) => {
     
             switch (packet) {
                 case eSocketPacket.create_channel: // 채널 생성
-                    handlePacketZero(ws, packet, data);
+                    handlePacketZero(channel, ws, packet, data);
                     break;
                 case eSocketPacket.join_channel: // 채널 참여
                     handlePacketOne(channel, ws, data, packet);
@@ -38,11 +38,12 @@ wss.on('connection', (ws) => {
                     break;
             }
             
-
+            handleDefaultPacket(channel, ws, data);
+            
         } catch (error) {
             console.error('Error handling data:', error);
         }
-        handleDefaultPacket(channel, ws, data);
+        
     });
 
     // 클라이언트 연결 해제 시
