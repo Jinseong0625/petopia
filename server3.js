@@ -115,7 +115,11 @@ function addClientToChannel(channel, client) {
 function handlePacketZero(ws, packet) {
     if (packet === eSocketPacket.create_channel) {
         const newChannel = createChannel(ws);
-        data.clientMessage = newChannel;
+        ws.send(JSON.stringify({
+            channelCreated: newChannel,
+            packet: eSocketPacket.create_channel,
+            message: newChannel
+        }));
         console.log(`Channel ${newChannel} created. Master client: ${ws._socket.remoteAddress}`);
     } else {
         console.error('Invalid packet for target 0.');
