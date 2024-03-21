@@ -92,14 +92,15 @@ wss.on('connection', (ws) => {
 }*/
 
 // 채널 생성 함수
+/*
 function createChannel(masterClient) {
     const newChannel = channelCounter++;
     channels[newChannel] = new Set(); // 채널 생성 및 클라이언트 추가
     channels[newChannel].add(masterClient);
-    console.log(`Channel ${newChannel} created. Master client: ${masterClient._socket.remoteAddress}`);
+    //console.log(`Channel ${newChannel} created. Master client: ${masterClient._socket.remoteAddress}`);
     logChannelInfo(newChannel);
     return newChannel;
-}
+}*/
 
 // 채널에 클라이언트 추가 함수
 function addClientToChannel(channel, client) {
@@ -115,11 +116,7 @@ function addClientToChannel(channel, client) {
 function handlePacketZero(ws, packet) {
     if (packet === eSocketPacket.create_channel) {
         const newChannel = createChannel(ws);
-        ws.send(JSON.stringify({
-            channelCreated: newChannel,
-            packet: eSocketPacket.create_channel,
-            message: newChannel
-        }));
+        data.clientMessage = newChannel;
         console.log(`Channel ${newChannel} created. Master client: ${ws._socket.remoteAddress}`);
     } else {
         console.error('Invalid packet for target 0.');
@@ -226,7 +223,7 @@ function relayDataToClients(channel, senderClient, data) {
 // 클라이언트에게 데이터 전송 - 서버
 function relayDataToServer(ws, data) {
     console.log('Data relayed to server:', data);
-    ws.send(data);
+    //ws.send(data);
 }
 
 // 클라이언트에게 데이터 전송 - 모든 클라이언트
