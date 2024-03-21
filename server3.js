@@ -220,7 +220,7 @@ function relayDataToClients(channel, senderClient, data) {
         });
     }
 
-    console.log(`Data relayed to all clients on channel ${channel}:`, JSON.stringify(JSON.parse(data)));
+    //console.log(`Data relayed to all clients on channel ${channel}:`, JSON.stringify(JSON.parse(data)));
 }
 
 // 클라이언트에게 데이터 전송 - 서버
