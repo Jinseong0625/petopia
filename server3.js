@@ -92,7 +92,6 @@ wss.on('connection', (ws) => {
 }*/
 
 // 채널 생성 함수
-/*
 function createChannel(masterClient) {
     const newChannel = channelCounter++;
     channels[newChannel] = new Set(); // 채널 생성 및 클라이언트 추가
@@ -100,7 +99,7 @@ function createChannel(masterClient) {
     //console.log(`Channel ${newChannel} created. Master client: ${masterClient._socket.remoteAddress}`);
     logChannelInfo(newChannel);
     return newChannel;
-}*/
+}
 
 // 채널에 클라이언트 추가 함수
 function addClientToChannel(channel, client) {
