@@ -140,7 +140,7 @@ function handlePacketOne(channel, ws, data, packet) {
             console.error(`Channel ${channel} does not exist.`);
         }
 
-        relayDataToClients(channel, ws, data);
+        //relayDataToClients(channel, ws, data);
     } else {
         console.error('Invalid packet for target 1.');
     }
@@ -212,7 +212,7 @@ function handleDefaultPacket(channel, ws, data) {
 function relayDataToClients(channel, senderClient, data) {
     if (channels[channel]) {
         channels[channel].forEach((client) => {
-            if (client !== senderClient && client.readyState === WebSocket.OPEN) {
+            if (client == senderClient && client.readyState === WebSocket.OPEN) {
                 client.send(data);
             }
         });
