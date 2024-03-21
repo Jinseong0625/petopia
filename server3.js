@@ -115,7 +115,8 @@ function addClientToChannel(channel, client) {
 // 패킷 핸들러 - 채널 생성
 function handlePacketZero(ws, packet, data) {
     if (packet === eSocketPacket.create_channel) {
-        data.message = createChannel(ws);
+        const newChannel = createChannel(ws);
+        data.message = newChannel
         //ws.send(data);
         console.log(`Channel ${newChannel} created. Master client: ${ws._socket.remoteAddress}`);
     } else {
