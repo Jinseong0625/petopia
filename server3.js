@@ -25,7 +25,7 @@ wss.on('connection', (ws) => {
     
             switch (packet) {
                 case eSocketPacket.create_channel: // 채널 생성
-                    handlePacketZero(channel, ws, packet, data);
+                    handlePacketZero(ws, packet, data);
                     break;
                 case eSocketPacket.join_channel: // 채널 참여
                     handlePacketOne(channel, ws, data, packet);
@@ -38,12 +38,11 @@ wss.on('connection', (ws) => {
                     break;
             }
             
-            handleDefaultPacket(channel, ws, data);
 
         } catch (error) {
             console.error('Error handling data:', error);
         }
-        
+        handleDefaultPacket(channel, ws, data);
     });
 
     // 클라이언트 연결 해제 시
@@ -114,10 +113,9 @@ function addClientToChannel(channel, client) {
 }
 
 // 패킷 핸들러 - 채널 생성
-function handlePacketZero(channel, ws, data, packet) {
+function handlePacketZero(ws, packet, data) {
     if (packet === eSocketPacket.create_channel) {
-        const newChannel = createChannel(ws);
-        data.message = newChannel;
+        data.message = createChannel(ws);
         //ws.send(data);
         console.log(`Channel ${newChannel} created. Master client: ${ws._socket.remoteAddress}`);
     } else {
