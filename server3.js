@@ -28,10 +28,10 @@ wss.on('connection', (ws) => {
                     handlePacketZero(ws, packet, data);
                     break;
                 case eSocketPacket.join_channel: // 채널 참여
-                    handlePacketOne(channel, ws, data, packet);
+                     handlePacketOne(channel, ws, data, packet);
                     break;
                 case eSocketPacket.join_world: // world로 클라 전송
-                    handlePacketTwo(channel, ws, data, packet);
+                    handlePackettwo(channel, ws, data, packet);
                     break;
                 case eSocketPacket.exit_world: // 월드 나가기
                     handlePacketthree(channel, ws, data, packet);
@@ -146,12 +146,18 @@ function handlePacketOne(channel, ws, data, packet)  {
 }
 
 // 패킷 핸들러 - world로 클라 전송
-function handlePacketTwo(channel, ws, data, packet) {
+function handlePackettwo(channel, ws, data, packet) {
     if (packet === eSocketPacket.join_world) {
-        console.log(`Client joined world in channel ${channel}: ${ws._socket.remoteAddress}`);
-        
-        // 모든 클라이언트에게 데이터 전송 (브로드캐스팅)
-        relayDataToAllClients(channel, ws, data);
+        // 채널에 클라이언트 추가
+        if (channels[channel]) {
+            addClientToChannel(channel, ws);
+            if (channels[channel].size > 1) {
+                relayDataToClients(channel, ws, data); // 모든 클라이언트에게 메시지 전송
+            }
+            console.log(`Client added to channel ${channel}: ${ws._socket.remoteAddress}`);
+        } else {
+            console.error(`Channel ${channel} does not exist.`);
+        }
     } else {
         console.error('Invalid packet for target 2.');
     }
