@@ -28,7 +28,7 @@ wss.on('connection', (ws) => {
                     handlePacketZero(ws, packet);
                     break;
                 case eSocketPacket.join_channel: // 채널 참여
-                    data = handlePacketOne(channel, ws, data, packet);
+                    handlePacketOne(channel, ws, data, packet);
                     break;
                 case eSocketPacket.join_world: // world로 클라 전송
                     handlePackettwo(channel, ws, data, packet);
@@ -37,12 +37,11 @@ wss.on('connection', (ws) => {
                     handlePacketthree(channel, ws, data, packet);
                     break;
             }
-            
+            handleDefaultPacket(channel, ws, data);
 
         } catch (error) {
             console.error('Error handling data:', error);
         }
-        handleDefaultPacket(channel, ws, data);
     });
 
     // 클라이언트 연결 해제 시
@@ -116,7 +115,11 @@ function addClientToChannel(channel, client) {
 function handlePacketZero(ws, packet) {
     if (packet === eSocketPacket.create_channel) {
         const newChannel = createChannel(ws);
-        ws.send(data);
+        ws.send(JSON.stringify({
+            channelCreated: newChannel,
+            packet: eSocketPacket.create_channel,
+            message: newChannel
+        }));
         console.log(`Channel ${newChannel} created. Master client: ${ws._socket.remoteAddress}`);
     } else {
         console.error('Invalid packet for target 0.');
@@ -124,7 +127,7 @@ function handlePacketZero(ws, packet) {
 }
 
 // 패킷 핸들러 - 채널 참여
-function handlePacketOne(channel, ws, data, packet)  {
+function handlePacketOne(channel, ws, data, packet) {
     if (packet === eSocketPacket.join_channel) {
         // 채널에 클라이언트 추가
         if (channels[channel]) {
@@ -141,7 +144,6 @@ function handlePacketOne(channel, ws, data, packet)  {
     } else {
         console.error('Invalid packet for target 1.');
     }
-    return data;
 }
 
 // 패킷 핸들러 - world로 클라 전송
@@ -211,7 +213,10 @@ function relayDataToClients(channel, senderClient, data) {
     if (channels[channel]) {
         channels[channel].forEach((client) => {
             if (client !== senderClient && client.readyState === WebSocket.OPEN) {
-                client.send(data);
+                client.send(JSON.stringify({
+                    channelJoined: channel,
+                    message: channel
+                }));
             }
         });
     }
