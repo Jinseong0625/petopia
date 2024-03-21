@@ -96,7 +96,7 @@ function createChannel(masterClient) {
     const newChannel = channelCounter++;
     channels[newChannel] = new Set(); // 채널 생성 및 클라이언트 추가
     channels[newChannel].add(masterClient);
-    //console.log(`Channel ${newChannel} created. Master client: ${masterClient._socket.remoteAddress}`);
+    console.log(`Channel ${newChannel} created. Master client: ${masterClient._socket.remoteAddress}`);
     logChannelInfo(newChannel);
     return newChannel;
 }
