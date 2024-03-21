@@ -24,18 +24,19 @@ wss.on('connection', (ws) => {
     
             switch (packet) {
                 case eSocketPacket.create_channel: // packet = 1 이건 채널을 생성하려고 하는것이고 
-                    handleTargetZero(ws,packet);
+                    handlePacketZero(ws,packet);
                     break;
     
                 case eSocketPacket.join_channel: // packet = 2 이건 생성되어 있는 채널에 클라를 추가하는 것이고
-                    handleTargetOne(channel, ws, data, packet);
+                    handlePacketOne(channel, ws, data, packet);
                     break;
                 
                 case eSocketPacket.join_world: //packet = 3 이건 world로 클라를 보내는 역할을 하는것이고
-                    handleTargetOne(channel, ws, data, packet);
+                    handlePackettwo(channel, ws, data, packet);
                     break;
                 
                 case eSocketPacket.exit_world: // packet = 4 이건 월드를 나가는 역할이다.
+                    handlePacketthree
                     break;
 
                 // 다른 패킷 추가 여기서 내가 볼땐  
@@ -113,9 +114,8 @@ function addClientToChannel(channel, client) {
     }
 }
 
-function handleTargetZero(ws, packet) {
+function handlePacketZero(ws, packet) {
     if (packet === eSocketPacket.create_channel) {
-        // 클라이언트가 타겟 0 패킷을 보내면 새로운 채널을 생성하고 마스터 클라이언트로 설정
         const newChannel = createChannel(ws);
         ws.send(JSON.stringify({
             channelCreated: newChannel,
@@ -128,9 +128,9 @@ function handleTargetZero(ws, packet) {
     }
 }
 
-function handleTargetOne(channel, ws, data, packet) {
+function handlePacketOne(channel, ws, data, packet) {
     if (packet === eSocketPacket.join_channel) {
-        // 클라이언트가 타겟 1 패킷을 보내면 해당 채널에 클라이언트를 추가
+        // 클라이언트가 패킷 1 패킷을 보내면 해당 채널에 클라이언트를 추가
         if (channels[channel]) {
             addClientToChannel(channel, ws);
             if (channels[channel].size > 1) {
@@ -147,9 +147,65 @@ function handleTargetOne(channel, ws, data, packet) {
     }
 }
 
-function handleDefaultPacket(channel, ws, data) {
-    // 특별한 처리가 필요 없는 경우 아무 작업도 하지 않음 차후에 추가하면 될듯
+function handlePackettwo(channel, ws, data, packet) {
+    if (packet === eSocketPacket.join_world) {
+        // 클라이언트가 패킷 2 패킷을 보내면 해당 채널에 클라이언트를 추가
+        if (channels[channel]) {
+            addClientToChannel(channel, ws);
+            if (channels[channel].size > 1) {
+                relayDataToClients(channel, ws, data); // 모든 클라이언트에게 메시지 전송
+            }
+            console.log(`Client added to channel ${channel}: ${ws._socket.remoteAddress}`);
+        } else {
+            console.error(`Channel ${channel} does not exist.`);
+        }
+    } else {
+        console.error('Invalid packet for target 2.');
+    }
 }
+
+function handlePacketthree(channel, ws, data, packet) {
+    if (packet === eSocketPacket.exit_world) {
+        // 클라이언트가 패킷 3 패킷을 보내면 해당 채널에서 클라이언트를 제거
+        removeClient(ws);
+        // 채널에 변경 사항이 있을 경우 모든 클라이언트에게 새로운 채널 정보를 전달
+        relayDataToClients(channel, ws, data); // 모든 클라이언트에게 메시지 전송
+        console.log(`Client exited from channel ${channel}: ${ws._socket.remoteAddress}`);
+    } else {
+        console.error('Invalid packet for target 3.');
+    }
+}
+
+function handleDefaultPacket(channel, ws, data) {
+    try {
+        const clientMessage = JSON.parse(data);
+        const target = clientMessage.target;
+        const packet = clientMessage.packet;
+
+        switch (target) {
+            case eSendTarget.server: // 서버에 데이터를 전송할 경우
+                relayDataToServer(ws, data);
+                break;
+            case eSendTarget.all: // 모든 클라이언트에 데이터를 전송할 경우
+                relayDataToAllClients(channel, ws, data);
+                break;
+            case eSendTarget.master: // 마스터 클라이언트에 데이터를 전송할 경우
+                relayDataToMasterClient(channel, ws, data);
+                break;
+            case eSendTarget.anothers: // 다른 클라이언트에 데이터를 전송할 경우
+                relayDataToOtherClients(channel, ws, data);
+                break;
+            case eSendTarget.target: // 특정 클라이언트에 데이터를 전송할 경우
+                relayDataToTargetClient(channel, ws, data);
+                break;
+            default:
+                console.error('Invalid target.');
+        }
+    } catch (error) {
+        console.error('Error handling default packet:', error);
+    }
+}
+
 
 function relayDataToClients(channel, senderClient, data) {
     if (channels[channel]) {
@@ -166,6 +222,56 @@ function relayDataToClients(channel, senderClient, data) {
 
     console.log(`Data relayed to all clients on channel ${channel}:`, JSON.stringify(JSON.parse(data)));
 }
+
+function relayDataToServer(ws, data) {
+    console.log('Data relayed to server:', data);
+    ws.send(data);
+}
+
+function relayDataToAllClients(channel, senderClient, data) {
+    console.log('Data relayed to all clients in channel', channel, ':', data);
+    channels[channel].forEach(client => {
+        if (client !== senderClient && client.readyState === WebSocket.OPEN) {
+            client.send(data);
+        }
+    });
+}
+
+function relayDataToMasterClient(channel, senderClient, data) {
+    console.log('Data relayed to master client in channel', channel, ':', data);
+    const masterClient = Array.from(channels[channel])[0];
+    if (masterClient && masterClient !== senderClient && masterClient.readyState === WebSocket.OPEN) {
+        masterClient.send(data);
+    } else {
+        console.error('Master client not found or not connected in channel', channel);
+    }
+}
+
+function relayDataToOtherClients(channel, senderClient, data) {
+    console.log('Data relayed to other clients in channel', channel, ':', data);
+    channels[channel].forEach(client => {
+        if (client !== senderClient && client.readyState === WebSocket.OPEN) {
+            client.send(data);
+        }
+    });
+}
+
+function relayDataToTargetClient(channel, senderClient, data) {
+    console.log('Data relayed to target client in channel', channel, ':', data);
+    try {
+        const clientMessage = JSON.parse(data);
+        const targetClientId = clientMessage.targetClientId;
+        const targetClient = Array.from(channels[channel]).find(client => client.id === targetClientId);
+        if (targetClient && targetClient !== senderClient && targetClient.readyState === WebSocket.OPEN) {
+            targetClient.send(data);
+        } else {
+            console.error('Target client not found or not connected in channel', channel);
+        }
+    } catch (error) {
+        console.error('Error relaying data to target client in channel', channel, ':', error);
+    }
+}
+
 
 function removeClient(client) {
     // 클라이언트가 연결 해제될 때 해당 클라이언트를 모든 채널에서 제거
