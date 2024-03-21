@@ -133,7 +133,7 @@ function handlePacketOne(channel, ws, data, packet) {
         if (channels[channel]) {
             addClientToChannel(channel, ws);
             if (channels[channel].size > 1) {
-                relayDataToClients(channel, ws, data);
+                relayDataToAllClients(channel, ws, data);
             }
             console.log(`Client added to channel ${channel}: ${ws._socket.remoteAddress}`);
         } else {
@@ -150,15 +150,9 @@ function handlePacketOne(channel, ws, data, packet) {
 function handlePackettwo(channel, ws, data, packet) {
     if (packet === eSocketPacket.join_world) {
         // 채널에 클라이언트 추가
-        if (channels[channel]) {
-            addClientToChannel(channel, ws);
-            if (channels[channel].size > 1) {
-                relayDataToClients(channel, ws, data); // 모든 클라이언트에게 메시지 전송
-            }
-            console.log(`Client added to channel ${channel}: ${ws._socket.remoteAddress}`);
-        } else {
-            console.error(`Channel ${channel} does not exist.`);
-        }
+        
+            console.log(`Client added to channel ${channel}: ${ws.send(data)}`);
+        
     } else {
         console.error('Invalid packet for target 2.');
     }
@@ -209,13 +203,13 @@ function handleDefaultPacket(channel, ws, data) {
 }
 
 // 클라이언트에게 데이터 전송 - 모든 클라이언트
-function relayDataToClients(channel, senderClient, data) {
+function relayDataToClients(channel, ws, data) {
     if (channels[channel]) {
         channels[channel].forEach((client) => {
-            console.log('log', data);
+            console.log('log', ws.send(data));
             if (client.readyState === WebSocket.OPEN) {
                 client.send(data);
-                console.log('log', data);
+                console.log('log', ws.send(data));
             }
         });
     }
@@ -233,7 +227,7 @@ function relayDataToServer(ws, data) {
 function relayDataToAllClients(channel, senderClient, data) {
     console.log('Data relayed to all clients in channel', channel, ':', data);
     channels[channel].forEach(client => {
-        if (client !== senderClient && client.readyState === WebSocket.OPEN) {
+        if ( client.readyState === WebSocket.OPEN) {
             client.send(data);
         }
     });
