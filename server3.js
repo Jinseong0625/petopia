@@ -133,7 +133,7 @@ function handlePacketOne(channel, ws, data, packet) {
         if (channels[channel]) {
             addClientToChannel(channel, ws);
             if (channels[channel].size > 1) {
-                relayDataToAllClients(channel, ws, data);
+                relayDataToAllClients(channel, data);
             }
             console.log(`Client added to channel ${channel}: ${ws._socket.remoteAddress}`);
         } else {
@@ -224,10 +224,10 @@ function relayDataToServer(ws, data) {
 }
 
 // 클라이언트에게 데이터 전송 - 모든 클라이언트
-function relayDataToAllClients(channel, senderClient, data) {
+function relayDataToAllClients(channel, data) {
     console.log('Data relayed to all clients in channel', channel, ':', data);
     channels[channel].forEach(client => {
-        if ( client.readyState === WebSocket.OPEN) {
+        if (client.readyState === WebSocket.OPEN) {
             client.send(data);
         }
     });
