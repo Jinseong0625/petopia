@@ -39,7 +39,7 @@ wss.on('connection', (ws) => {
             }
             
             handleDefaultPacket(channel, ws, data);
-            
+
         } catch (error) {
             console.error('Error handling data:', error);
         }
@@ -114,10 +114,10 @@ function addClientToChannel(channel, client) {
 }
 
 // 패킷 핸들러 - 채널 생성
-function handlePacketZero(ws, packet, data) {
+function handlePacketZero(channel, ws, data, packet) {
     if (packet === eSocketPacket.create_channel) {
         const newChannel = createChannel(ws);
-        data.message = newChannel
+        data.message = newChannel;
         //ws.send(data);
         console.log(`Channel ${newChannel} created. Master client: ${ws._socket.remoteAddress}`);
     } else {
