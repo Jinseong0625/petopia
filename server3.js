@@ -25,10 +25,10 @@ wss.on('connection', (ws) => {
     
             switch (packet) {
                 case eSocketPacket.create_channel: // 채널 생성
-                    handlePacketZero(ws, packet, data);
+                    handlePacketZero(ws, packet);
                     break;
                 case eSocketPacket.join_channel: // 채널 참여
-                     handlePacketOne(channel, ws, data, packet);
+                    data = handlePacketOne(channel, ws, data, packet);
                     break;
                 case eSocketPacket.join_world: // world로 클라 전송
                     handlePackettwo(channel, ws, data, packet);
@@ -113,15 +113,14 @@ function addClientToChannel(channel, client) {
 }
 
 // 패킷 핸들러 - 채널 생성
-function handlePacketZero(ws, packet, data) {
+function handlePacketZero(ws, packet) {
     if (packet === eSocketPacket.create_channel) {
-        data.message = createChannel(ws);
-        //ws.send(data);
+        const newChannel = createChannel(ws);
+        ws.send(data);
         console.log(`Channel ${newChannel} created. Master client: ${ws._socket.remoteAddress}`);
     } else {
         console.error('Invalid packet for target 0.');
     }
-    return data;
 }
 
 // 패킷 핸들러 - 채널 참여
