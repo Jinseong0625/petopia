@@ -1,6 +1,7 @@
 const WebSocket = require('ws');
 const { eSocketPacket } = require('../petopia/common/socketpacket.js');
 const { eSendTarget } = require('../petopia/common/socketTarget.js');
+const util = require('util');
 
 let channels = {};
 let channelCounter = 1;
@@ -226,5 +227,7 @@ function resetChannels() {
     channelCounter = 1;
     console.log('Channels reset.');
 }
+
+console.log(util.inspect(myObject));
 
 resetChannels();
