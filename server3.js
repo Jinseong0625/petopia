@@ -226,13 +226,14 @@ function relayDataToServer(ws, data) {
 function relayDataToAllClients(channel, data) {
     console.log('Data relayed to all clients in channel', channel, ':', data);
     channels[channel].forEach(client => {
-        //if (client.readyState === WebSocket.OPEN) {
+        if (client.readyState === WebSocket.OPEN) {
             client.send(data);
             console.log('Data relayed to all clients in channel', channel, ':', data);
-        //}
+        } else {
+            console.error('Client connection is not open, message not sent.');
+        }
     });
 }
-
 // 클라이언트에게 데이터 전송 - 마스터 클라이언트
 function relayDataToMasterClient(channel, senderClient, data) {
     console.log('Data relayed to master client in channel', channel, ':', data);
