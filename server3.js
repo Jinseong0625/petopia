@@ -80,10 +80,13 @@ function handleJoinChannel(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel; // 변수 이름 변경
     if (channels[joinChannel]) {
         addClientToChannel(joinChannel, ws);
+        // 수정: 채널이 존재할 때만 브로드캐스트를 수행합니다.
         if (channels[joinChannel].size > 1) {
-            relayDataToAllClients(joinChannel, data);
+            // 데이터 전송 전에 로깅 추가
+            console.log(`Broadcasting data to channel ${joinChannel}:`, data);
+            relayDataToAllClients(clientMessage, data);
         }
-        console.log(`Client added to channel ${joinChannel}: ${ws._socket.remoteAddress} ${data}`);
+        console.log(`Client added to channel ${joinChannel}: ${ws._socket.remoteAddress}`);
     } else {
         console.error(`Channel ${joinChannel} does not exist.`);
     }
