@@ -22,7 +22,7 @@ wss.on('connection', (ws) => {
                     handleCreateChannel(ws);
                     break;
                 case eSocketPacket.join_channel:
-                    handleJoinChannel(channel, ws, data);
+                    handleJoinChannel(clientMessage, ws, data);
                     break;
                 case eSocketPacket.join_world:
                     handleJoinWorld(channel, ws, data);
@@ -74,6 +74,7 @@ function handleCreateChannel(ws) {
 }
 
 function handleJoinChannel(channel, ws, data) {
+    const { channel } = clientMessage;
     if (channels[channel]) {
         addClientToChannel(channel, ws);
         if (channels[channel].size > 1) {
