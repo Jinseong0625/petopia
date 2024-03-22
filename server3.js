@@ -147,7 +147,7 @@ function relayDataToAllClients(channel, data) {
         console.log('Data relayed to all clients in channel', channel, ':', JSON.stringify(JSON.parse(data)));
         channels[channel].forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(data));
+                client.send(data);
             } else {
                 console.error('Client connection is not open, message not sent.');
             }
