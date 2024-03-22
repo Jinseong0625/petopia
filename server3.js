@@ -113,6 +113,7 @@ function handleExitWorld(clientMessage, ws, data) {
 function handleDefaultPacket(channel, ws, data) {
     try {
         const { target } = JSON.parse(data);
+        const {channel} = JSON.parse(data);
 
         switch (target) {
             case eSendTarget.server:
