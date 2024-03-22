@@ -152,7 +152,7 @@ function handlePackettwo(channel, ws, data, packet) {
         // 채널에 클라이언트 추가
         
             console.log(`Client added to channel ${channel}: ${ws.send(data)}`);
-        
+            relayDataToClients(channel, data);
     } else {
         console.error('Invalid packet for target 2.');
     }
