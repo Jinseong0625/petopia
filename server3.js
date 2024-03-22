@@ -74,7 +74,7 @@ function handleCreateChannel(ws) {
 }
 
 function handleJoinChannel(channel, ws, data) {
-    const { channel } = clientMessage.channel;
+    const channel = clientMessage.channel;
     if (channels[channel]) {
         addClientToChannel(channel, ws);
         if (channels[channel].size > 1) {
