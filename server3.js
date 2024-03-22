@@ -30,8 +30,10 @@ wss.on('connection', (ws) => {
                 case eSocketPacket.exit_world:
                     handleExitWorld(channel, ws, data);
                     break;
+                default:
+                    handleDefaultPacket(channel, ws, data);
+                    break;
             }
-            handleDefaultPacket(channel, ws, data);
 
         } catch (error) {
             console.error('Error handling data:', error);
