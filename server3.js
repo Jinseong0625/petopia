@@ -78,7 +78,13 @@ function handleCreateChannel(ws) {
 
 function handleJoinChannel(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel; // 변수 이름 변경
-    if (channels[joinChannel]) {
+
+    if (!channels[joinChannel]) {
+        console.error(`Channel ${joinChannel} does not exist.`);
+        return;
+    }
+
+    //if (channels[joinChannel]) {
         addClientToChannel(joinChannel, ws);
         // 수정: 채널이 존재할 때만 브로드캐스트를 수행합니다.
         if (channels[joinChannel].size > 1) {
@@ -87,9 +93,9 @@ function handleJoinChannel(clientMessage, ws, data) {
             relayDataToAllClients(clientMessage, data);
         }
         console.log(`Client added to channel ${joinChannel}: ${ws._socket.remoteAddress}`);
-    } else {
-        console.error(`Channel ${joinChannel} does not exist.`);
-    }
+    //} else {
+    //    console.error(`Channel ${joinChannel} does not exist.`);
+    //}
 }
 
 function handleJoinWorld(clientMessage, ws, data) {
