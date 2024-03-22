@@ -59,13 +59,20 @@ function createChannel(masterClient) {
 
 function addClientToChannel(channel, client) {
     if (channels[channel]) {
+        // 클라이언트가 채널에 추가되기 전에 채널의 현재 상태를 로깅합니다.
+        console.log(`Before adding client to channel ${channel}:`, Array.from(channels[channel]));
+
         channels[channel].add(client);
+
+        // 클라이언트가 채널에 추가되는 시점에서 클라이언트의 IP 주소와 연결 상태를 로깅합니다.
+        console.log(`Client ${client._socket.remoteAddress} added to channel ${channel}.`);
+
+        // 클라이언트가 채널에 추가된 후의 채널 상태를 로깅합니다.
         logChannelInfo(channel);
     } else {
         console.error(`Channel ${channel} does not exist.`);
     }
 }
-
 function handleCreateChannel(ws) {
     const newChannel = createChannel(ws);
 
@@ -187,7 +194,7 @@ function relayDataToAllClients(clientMessage, data) {
 function relayDataToMasterClient(clientMessage, senderClient, data) {
     const joinChannel = clientMessage.channel;
     console.log('Data relayed to master client in channel', joinChannel, ':', data);
-    const masterClient = Array.from(channels[channel])[0];
+    const masterClient = Array.from(channels[joinChannel])[0];
     if (masterClient && masterClient !== senderClient && masterClient.readyState === WebSocket.OPEN) {
         masterClient.send(JSON.stringify(data));
     } else {
