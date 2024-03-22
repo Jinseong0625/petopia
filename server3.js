@@ -218,7 +218,7 @@ function relayDataToClients(channel, data) {
 // 클라이언트에게 데이터 전송 - 서버
 function relayDataToServer(ws, data) {
     console.log('Data relayed to server:', data);
-    //ws.send(data);
+    client.send(data);
 }
 
 // 클라이언트에게 데이터 전송 - 모든 클라이언트
