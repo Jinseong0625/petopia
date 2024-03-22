@@ -207,7 +207,7 @@ function relayDataToClients(channel, data) {
     if (channels[channel]) {
         channels[channel].forEach((client) => {
             //if (client.readyState === WebSocket.OPEN) {
-                client.send(data);
+                client.send(JSON.stringify(data));
                 console.log(`Data relayed to all clients on channel ${channel}:`, JSON.stringify(JSON.parse(data)));
             //}
         });
@@ -227,7 +227,7 @@ function relayDataToAllClients(channel, data) {
     console.log('Data relayed to all clients in channel', channel, ':', data);
     channels[channel].forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
-            client.send(data);
+            client.send(JSON.stringify(data));
             console.log('Data relayed to all clients in channel', channel, ':', data);
         } else {
             console.error('Client connection is not open, message not sent.');
@@ -239,7 +239,7 @@ function relayDataToMasterClient(channel, senderClient, data) {
     console.log('Data relayed to master client in channel', channel, ':', data);
     const masterClient = Array.from(channels[channel])[0];
     if (masterClient && masterClient !== senderClient && masterClient.readyState === WebSocket.OPEN) {
-        masterClient.send(data);
+        masterClient.send(JSON.stringify(data));
     } else {
         console.error('Master client not found or not connected in channel', channel);
     }
@@ -250,7 +250,7 @@ function relayDataToOtherClients(channel, senderClient, data) {
     console.log('Data relayed to other clients in channel', channel, ':', data);
     channels[channel].forEach(client => {
         if (client !== senderClient && client.readyState === WebSocket.OPEN) {
-            client.send(data);
+            client.send(JSON.stringify(data));
         }
     });
 }
@@ -263,7 +263,7 @@ function relayDataToTargetClient(channel, senderClient, data) {
         const targetClientId = clientMessage.targetClientId;
         const targetClient = Array.from(channels[channel]).find(client => client.id === targetClientId);
         if (targetClient && targetClient !== senderClient && targetClient.readyState === WebSocket.OPEN) {
-            targetClient.send(data);
+            targetClient.send(JSON.stringify(data));
         } else {
             console.error('Target client not found or not connected in channel', channel);
         }
