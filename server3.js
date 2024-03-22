@@ -150,6 +150,11 @@ function relayDataToClients(channel, data) {
 
 function relayDataToAllClients(channel, data) {
     if (channels[channel]) {
+        // 수정: 데이터가 문자열 또는 직렬화 가능한 객체인지 확인합니다.
+        if (typeof data !== 'string' && !Buffer.isBuffer(data) && !ArrayBuffer.isView(data) && !(data instanceof ArrayBuffer)) {
+            console.error('Invalid data format:', data);
+            return;
+        }
         console.log('Data relayed to all clients in channel', channel, ':', data);
         channels[channel].forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
