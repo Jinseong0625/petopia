@@ -85,13 +85,13 @@ function handleCreateChannel(ws) {
 
 function handleJoinChannel(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel; // 변수 이름 변경
-    const midx = clientMessage.message.midx;
-
+    
     if (!channels[joinChannel]) {
         console.error(`Channel ${joinChannel} does not exist.`);
         return;
     }
 
+    const midx = clientMessage.message.midx;
     //if (channels[joinChannel]) {
         addClientToChannel(joinChannel, ws, midx);
         // 수정: 채널이 존재할 때만 브로드캐스트를 수행합니다.
