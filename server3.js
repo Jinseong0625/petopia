@@ -57,12 +57,12 @@ function createChannel(masterClient) {
     return newChannel;
 }
 
-function addClientToChannel(channel, client) {
+function addClientToChannel(channel, client, midx) {
     if (channels[channel]) {
         // 클라이언트가 채널에 추가되기 전에 채널의 현재 상태를 로깅합니다.
         console.log(`Before adding client to channel ${channel}:`, Array.from(channels[channel]));
 
-        channels[channel].add(client);
+        channels[channel].add(client,midx);
 
         // 클라이언트가 채널에 추가되는 시점에서 클라이언트의 IP 주소와 연결 상태를 로깅합니다.
         console.log(`Client ${client._socket.remoteAddress} added to channel ${channel}.`);
@@ -89,6 +89,7 @@ function handleCreateChannel(ws) {
 
 function handleJoinChannel(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel; // 변수 이름 변경
+    const midx = clientMessage.midx;
 
     if (!channels[joinChannel]) {
         console.error(`Channel ${joinChannel} does not exist.`);
@@ -96,7 +97,7 @@ function handleJoinChannel(clientMessage, ws, data) {
     }
 
     //if (channels[joinChannel]) {
-        addClientToChannel(joinChannel, ws);
+        addClientToChannel(joinChannel, ws, midx);
         // 수정: 채널이 존재할 때만 브로드캐스트를 수행합니다.
         if (channels[joinChannel].size >= 1) {
             
