@@ -71,7 +71,7 @@ function handleCreateChannel(ws) {
 
     // 채널에 마스터 클라이언트 추가
     addClientToChannel(newChannel, ws);
-    
+
     ws.send(JSON.stringify({
         channelCreated: newChannel,
         packet: eSocketPacket.create_channel,
@@ -91,7 +91,7 @@ function handleJoinChannel(clientMessage, ws, data) {
     //if (channels[joinChannel]) {
         addClientToChannel(joinChannel, ws);
         // 수정: 채널이 존재할 때만 브로드캐스트를 수행합니다.
-        if (channels[joinChannel].size > 1) {
+        if (channels[joinChannel].size >= 1) {
             // 데이터 전송 전에 로깅 추가
             console.log(`Broadcasting data to channel ${joinChannel}:`, data);
             relayDataToAllClients(clientMessage, data);
