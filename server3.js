@@ -206,9 +206,9 @@ function handleDefaultPacket(channel, ws, data) {
 function relayDataToClients(channel, data) {
     if (channels[channel]) {
         channels[channel].forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
+            //if (client.readyState === WebSocket.OPEN) {
                 client.send(data);
-            }
+            //}
         });
     }
 
