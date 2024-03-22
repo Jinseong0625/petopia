@@ -110,26 +110,25 @@ function handleExitWorld(clientMessage, ws, data) {
     }
 }
 
-function handleDefaultPacket(channel, ws, data) {
+function handleDefaultPacket(clientMessage, ws, data) {
     try {
         const { target } = JSON.parse(data);
-        const {channel} = JSON.parse(data);
 
         switch (target) {
             case eSendTarget.server:
-                relayDataToAllClients(channel, ws, data);
+                relayDataToAllClients(clientMessage, ws, data);
                 break;
             case eSendTarget.all:
-                relayDataToAllClients(channel, ws, data);
+                relayDataToAllClients(clientMessage, ws, data);
                 break;
             case eSendTarget.master:
-                relayDataToMasterClient(channel, ws, data);
+                relayDataToMasterClient(clientMessage, ws, data);
                 break;
             case eSendTarget.anothers:
-                relayDataToOtherClients(channel, ws, data);
+                relayDataToOtherClients(clientMessage, ws, data);
                 break;
             case eSendTarget.target:
-                relayDataToTargetClient(channel, ws, data);
+                relayDataToTargetClient(clientMessage, ws, data);
                 break;
             default:
                 console.error('Invalid target.');
@@ -148,15 +147,16 @@ function relayDataToClients(channel, data) {
     console.log(`Data relayed to all clients on channel ${channel}:`, JSON.stringify(data));
 }
 
-function relayDataToAllClients(channel, data) {
-    if (channels[channel]) {
+function relayDataToAllClients(clientMessage, data) {
+    const joinChannel = clientMessage.channel;
+    if (channels[joinChannel]) {
         // 수정: 데이터가 문자열 또는 직렬화 가능한 객체인지 확인합니다.
         if (typeof data !== 'string' && !Buffer.isBuffer(data) && !ArrayBuffer.isView(data) && !(data instanceof ArrayBuffer)) {
             console.error('Invalid data format:', data);
             return;
         }
-        console.log('Data relayed to all clients in channel', channel, ':', data);
-        channels[channel].forEach(client => {
+        console.log('Data relayed to all clients in channel', joinChannel, ':', data);
+        channels[joinChannel].forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
                 const jsonData = typeof data === 'string' ? data : JSON.stringify(data);
                 client.send(jsonData);
@@ -169,19 +169,21 @@ function relayDataToAllClients(channel, data) {
     }
 }
 
-function relayDataToMasterClient(channel, senderClient, data) {
-    console.log('Data relayed to master client in channel', channel, ':', data);
+function relayDataToMasterClient(clientMessage, senderClient, data) {
+    const joinChannel = clientMessage.channel;
+    console.log('Data relayed to master client in channel', joinChannel, ':', data);
     const masterClient = Array.from(channels[channel])[0];
     if (masterClient && masterClient !== senderClient && masterClient.readyState === WebSocket.OPEN) {
         masterClient.send(JSON.stringify(data));
     } else {
-        console.error('Master client not found or not connected in channel', channel);
+        console.error('Master client not found or not connected in channel', joinChannel);
     }
 }
 
-function relayDataToOtherClients(channel, senderClient, data) {
-    console.log('Data relayed to other clients in channel', channel, ':', data);
-    channels[channel].forEach(client => {
+function relayDataToOtherClients(clientMessage, senderClient, data) {
+    const joinChannel = clientMessage.channel;
+    console.log('Data relayed to other clients in channel', joinChannel, ':', data);
+    channels[joinChannel].forEach(client => {
         if (client !== senderClient && client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify(data));
         }
