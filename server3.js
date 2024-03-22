@@ -77,9 +77,10 @@ function handleJoinChannel(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel; // 변수 이름 변경
     if (channels[joinChannel]) {
         addClientToChannel(joinChannel, ws);
-        if (channels[joinChannel].size > 1) {
+        relayDataToClients
+        /*if (channels[joinChannel].size > 1) {
             relayDataToAllClients(joinChannel, data);
-        }
+        }*/
         console.log(`Client added to channel ${joinChannel}: ${ws._socket.remoteAddress}`);
     } else {
         console.error(`Channel ${joinChannel} does not exist.`);
