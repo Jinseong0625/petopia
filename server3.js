@@ -172,7 +172,7 @@ function handlePacketthree(channel, ws, data, packet) {
 }
 
 // 기본 패킷 핸들러
-function handleDefaultPacket(channel, ws, data) {
+/*function handleDefaultPacket(channel, ws, data) {
     try {
         const clientMessage = JSON.parse(data);
         const target = clientMessage.target;
@@ -200,7 +200,7 @@ function handleDefaultPacket(channel, ws, data) {
     } catch (error) {
         console.error('Error handling default packet:', error);
     }
-}
+}*/
 
 // 클라이언트에게 데이터 전송 - 모든 클라이언트
 function relayDataToClients(channel, data) {
