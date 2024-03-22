@@ -228,6 +228,6 @@ function resetChannels() {
     console.log('Channels reset.');
 }
 
-console.log(util.inspect(myObject));
+console.log(util.inspect(data));
 
 resetChannels();
