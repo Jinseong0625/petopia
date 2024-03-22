@@ -15,7 +15,7 @@ wss.on('connection', (ws) => {
     ws.on('message', (data) => {
         try {
             const clientMessage = JSON.parse(data);
-            const { channel, packet } = clientMessage;
+            //const { channel, packet } = clientMessage;
     
             switch (packet) {
                 case eSocketPacket.create_channel:
@@ -25,13 +25,13 @@ wss.on('connection', (ws) => {
                     handleJoinChannel(clientMessage, ws, data);
                     break;
                 case eSocketPacket.join_world:
-                    handleJoinWorld(channel, ws, data);
+                    handleJoinWorld(clientMessage, ws, data);
                     break;
                 case eSocketPacket.exit_world:
-                    handleExitWorld(channel, ws, data);
+                    handleExitWorld(clientMessage, ws, data);
                     break;
                 default:
-                    handleDefaultPacket(channel, ws, data);
+                    handleDefaultPacket(clientMessage, ws, data);
                     break;
             }
 
@@ -88,22 +88,24 @@ function handleJoinChannel(clientMessage, ws, data) {
     }
 }
 
-function handleJoinWorld(channel, ws, data) {
-    if (channels[channel]) {
-        console.log(`Client added to channel ${channel}: ${ws.send(data)}`);
-        relayDataToAllClients(channel, data);
+function handleJoinWorld(clientMessage, ws, data) {
+    const joinChannel = clientMessage.channel;
+    if (channels[joinChannel]) {
+        console.log(`Client added to channel ${joinChannel}: ${ws.send(data)}`);
+        relayDataToAllClients(joinChannel, data);
     } else {
-        console.error(`Channel ${channel} does not exist.`);
+        console.error(`Channel ${joinChannel} does not exist.`);
     }
 }
 
-function handleExitWorld(channel, ws, data) {
-    if (channels[channel]) {
+function handleExitWorld(clientMessage, ws, data) {
+    const joinChannel = clientMessage.channel;
+    if (channels[joinChannel]) {
         removeClient(ws);
-        relayDataToAllClients(channel, ws, data);
-        console.log(`Client exited from channel ${channel}: ${ws._socket.remoteAddress}`);
+        relayDataToAllClients(joinChannel, ws, data);
+        console.log(`Client exited from channel ${joinChannel}: ${ws._socket.remoteAddress}`);
     } else {
-        console.error(`Channel ${channel} does not exist.`);
+        console.error(`Channel ${joinChannel} does not exist.`);
     }
 }
 
