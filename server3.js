@@ -89,7 +89,7 @@ function handleJoinChannel(clientMessage, ws, data) {
 function handleJoinWorld(channel, ws, data) {
     if (channels[channel]) {
         console.log(`Client added to channel ${channel}: ${ws.send(data)}`);
-        relayDataToClients(channel, data);
+        relayDataToAllClients(channel, data);
     } else {
         console.error(`Channel ${channel} does not exist.`);
     }
@@ -98,7 +98,7 @@ function handleJoinWorld(channel, ws, data) {
 function handleExitWorld(channel, ws, data) {
     if (channels[channel]) {
         removeClient(ws);
-        relayDataToClients(channel, ws, data);
+        relayDataToAllClients(channel, ws, data);
         console.log(`Client exited from channel ${channel}: ${ws._socket.remoteAddress}`);
     } else {
         console.error(`Channel ${channel} does not exist.`);
