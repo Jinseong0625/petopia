@@ -93,7 +93,7 @@ function handleJoinChannel(clientMessage, ws, data) {
         return;
     }
 
-    const messageData = JSON.parse(clientMessage.message);
+    const messageData = clientMessage.message;
     const midx = messageData.midx;
     //if (channels[joinChannel]) {
         addClientToChannel(joinChannel, ws, midx);
