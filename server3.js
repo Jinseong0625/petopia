@@ -77,7 +77,8 @@ function handleJoinChannel(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel; // 변수 이름 변경
     if (channels[joinChannel]) {
         addClientToChannel(joinChannel, ws);
-        relayDataToClients
+        //relayDataToClients
+        relayDataToAllClients(channel, data);
         /*if (channels[joinChannel].size > 1) {
             relayDataToAllClients(joinChannel, data);
         }*/
