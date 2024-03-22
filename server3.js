@@ -91,7 +91,8 @@ function handleJoinChannel(clientMessage, ws, data) {
         return;
     }
 
-    const midx = clientMessage.message.midx;
+    const messageData = JSON.parse(clientMessage.message);
+    const midx = messageData.midx;
     //if (channels[joinChannel]) {
         addClientToChannel(joinChannel, ws, midx);
         // 수정: 채널이 존재할 때만 브로드캐스트를 수행합니다.
