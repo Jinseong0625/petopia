@@ -133,14 +133,14 @@ function handlePacketOne(channel, ws, data, packet) {
         if (channels[channel]) {
             addClientToChannel(channel, ws);
             if (channels[channel].size > 1) {
-                //relayDataToAllClients(channel, data);
+                relayDataToAllClients(channel, data);
             }
             console.log(`Client added to channel ${channel}: ${ws._socket.remoteAddress}`);
         } else {
             console.error(`Channel ${channel} does not exist.`);
         }
 
-        relayDataToClients(channel, ws, data);
+        //relayDataToClients(channel, ws, data);
     } else {
         console.error('Invalid packet for target 1.');
     }
@@ -225,9 +225,9 @@ function relayDataToServer(ws, data) {
 function relayDataToAllClients(channel, data) {
     console.log('Data relayed to all clients in channel', channel, ':', data);
     channels[channel].forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
+        //if (client.readyState === WebSocket.OPEN) {
             client.send(data);
-        }
+        //}
     });
 }
 
