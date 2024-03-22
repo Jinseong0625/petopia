@@ -153,9 +153,11 @@ function relayDataToAllClients(channel, data) {
                 if (typeof data === 'object') {
                     // 객체인 경우에만 JSON.stringify 사용
                     client.send(JSON.stringify(data));
+                    console.log(util.inspect(data));
                 } else {
                     // 문자열인 경우에는 그대로 전송
                     client.send(data);
+                    console.log(util.inspect(data));
                 }
             } else {
                 console.error('Client connection is not open, message not sent.');
@@ -227,7 +229,5 @@ function resetChannels() {
     channelCounter = 1;
     console.log('Channels reset.');
 }
-
-console.log(util.inspect(data));
 
 resetChannels();
