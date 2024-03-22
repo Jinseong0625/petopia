@@ -83,7 +83,7 @@ function handleJoinChannel(clientMessage, ws, data) {
         if (channels[joinChannel].size > 1) {
             relayDataToAllClients(joinChannel, data);
         }
-        console.log(`Client added to channel ${joinChannel}: ${ws._socket.remoteAddress}`);
+        console.log(`Client added to channel ${joinChannel}: ${ws._socket.remoteAddress} ${data}`);
     } else {
         console.error(`Channel ${joinChannel} does not exist.`);
     }
