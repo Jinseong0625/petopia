@@ -138,14 +138,14 @@ function handleDefaultPacket(clientMessage, ws, data) {
     }
 }
 
-function relayDataToClients(channel, data) {
+/*function relayDataToClients(channel, data) {
     if (channels[channel]) {
         channels[channel].forEach((client) => {
             client.send(JSON.stringify(data));
         });
     }
     console.log(`Data relayed to all clients on channel ${channel}:`, JSON.stringify(data));
-}
+}*/
 
 function relayDataToAllClients(clientMessage, data) {
     const joinChannel = clientMessage.channel;
@@ -165,7 +165,7 @@ function relayDataToAllClients(clientMessage, data) {
             }
         });
     } else {
-        console.error(`Channel ${channel} does not exist.`);
+        console.error(`Channel ${joinChannel} does not exist.`);
     }
 }
 
