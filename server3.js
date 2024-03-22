@@ -15,6 +15,7 @@ wss.on('connection', (ws) => {
     ws.on('message', (data) => {
         try {
             const clientMessage = JSON.parse(data);
+            const packet = clientMessage.packet
             //const { channel, packet } = clientMessage;
     
             switch (packet) {
