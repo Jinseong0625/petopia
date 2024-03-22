@@ -223,14 +223,18 @@ function relayDataToServer(ws, data) {
 
 // 클라이언트에게 데이터 전송 - 모든 클라이언트
 function relayDataToAllClients(channel, data) {
-    console.log('Data relayed to all clients in channel', channel, ':', data);
-    channels[channel].forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(data));
-        } else {
-            console.error('Client connection is not open, message not sent.');
-        }
-    });
+    if (channels[channel]) { // channel이 정의되어 있는지 확인
+        console.log('Data relayed to all clients in channel', channel, ':', data);
+        channels[channel].forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(data);
+            } else {
+                console.error('Client connection is not open, message not sent.');
+            }
+        });
+    } else {
+        console.error(`Channel ${channel} does not exist.`);
+    }
 }
 // 클라이언트에게 데이터 전송 - 마스터 클라이언트
 function relayDataToMasterClient(channel, senderClient, data) {
