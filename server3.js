@@ -162,12 +162,9 @@ function handleDefaultPacket(clientMessage, ws, data) {
 function relayDataToAllClients(clientMessage, data) {
     const joinChannel = clientMessage.channel;
     if (channels[joinChannel]) {
-        if (typeof data !== 'string' && !Buffer.isBuffer(data) && !ArrayBuffer.isView(data) && !(data instanceof ArrayBuffer)) {
-            console.error('Invalid data format:', data);
-            return;
-        }
-        console.log('Data relayed to all clients in channel', joinChannel, ':', data);
-        const jsonData = typeof data === 'string' ? data : JSON.stringify(data); // JSON 문자열로 변환
+        // JSON.stringify() 함수를 사용하여 모든 데이터를 JSON 문자열로 변환
+        const jsonData = JSON.stringify(data);
+        console.log('Data relayed to all clients in channel', joinChannel, ':', jsonData);
         channels[joinChannel].forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(jsonData);
