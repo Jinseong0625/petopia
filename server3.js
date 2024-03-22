@@ -64,11 +64,13 @@ function addClientToChannel(channel, client, midx) {
 
         channels[channel].add(client);
 
+        logChannelInfo(channel);
+
         // 클라이언트가 채널에 추가되는 시점에서 클라이언트의 IP 주소와 연결 상태를 로깅합니다.
         console.log(`Client ${midx} added to channel ${channel}.`);
 
-        // 클라이언트가 채널에 추가된 후의 채널 상태를 로깅합니다.
-        logChannelInfo(channel);
+        // 클라이언트가 추가된 후에 채널 크기를 확인합니다.
+        console.log(`Channel ${channel} now has ${channels[channel].size} client(s).`);
     } else {
         console.error(`Channel ${channel} does not exist.`);
     }
