@@ -148,16 +148,15 @@ function relayDataToClients(channel, data) {
 function relayDataToAllClients(channel, data) {
     if (channels[channel]) {
         console.log('Data relayed to all clients in channel', channel, ':', data);
+        const sanitizedData = removeCircularReferences(data); // 순환 참조 제거
         channels[channel].forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
-                if (typeof data === 'object') {
-                    // 객체인 경우에만 JSON.stringify 사용
-                    client.send(JSON.stringify(data));
-                    console.log(util.inspect(data));
+                if (typeof sanitizedData === 'object') {
+                    client.send(JSON.stringify(sanitizedData)); // 직렬화된 데이터 전송
+                    console.log(util.inspect(sanitizedData));
                 } else {
-                    // 문자열인 경우에는 그대로 전송
-                    client.send(data);
-                    console.log(util.inspect(data));
+                    client.send(sanitizedData);
+                    console.log(util.inspect(sanitizedData));
                 }
             } else {
                 console.error('Client connection is not open, message not sent.');
@@ -228,6 +227,20 @@ function resetChannels() {
     channels = {};
     channelCounter = 1;
     console.log('Channels reset.');
+}
+
+// 순환 참조 제거 함수
+function removeCircularReferences(data) {
+    const seen = new WeakSet();
+    return JSON.parse(JSON.stringify(data, function(key, value) {
+        if (typeof value === 'object' && value !== null) {
+            if (seen.has(value)) {
+                return; // 순환 참조가 발견되면 값은 제거됩니다.
+            }
+            seen.add(value);
+        }
+        return value;
+    }));
 }
 
 resetChannels();
