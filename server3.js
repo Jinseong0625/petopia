@@ -73,16 +73,16 @@ function handleCreateChannel(ws) {
     console.log(`Channel ${newChannel} created. Master client: ${ws._socket.remoteAddress}`);
 }
 
-function handleJoinChannel(channel, ws, data) {
-    const channel = clientMessage.channel;
-    if (channels[channel]) {
-        addClientToChannel(channel, ws);
-        if (channels[channel].size > 1) {
-            relayDataToAllClients(channel, data);
+function handleJoinChannel(clientMessage, ws, data) {
+    const joinChannel = clientMessage.channel; // 변수 이름 변경
+    if (channels[joinChannel]) {
+        addClientToChannel(joinChannel, ws);
+        if (channels[joinChannel].size > 1) {
+            relayDataToAllClients(joinChannel, data);
         }
-        console.log(`Client added to channel ${channel}: ${ws._socket.remoteAddress}`);
+        console.log(`Client added to channel ${joinChannel}: ${ws._socket.remoteAddress}`);
     } else {
-        console.error(`Channel ${channel} does not exist.`);
+        console.error(`Channel ${joinChannel} does not exist.`);
     }
 }
 
