@@ -1,7 +1,6 @@
 const WebSocket = require('ws');
 const { eSocketPacket } = require('../petopia/common/socketpacket.js');
 const { eSendTarget } = require('../petopia/common/socketTarget.js');
-const util = require('util');
 
 let channels = {};
 let channelCounter = 1;
@@ -78,11 +77,9 @@ function handleJoinChannel(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel; // 변수 이름 변경
     if (channels[joinChannel]) {
         addClientToChannel(joinChannel, ws);
-        //relayDataToClients
-        relayDataToAllClients(joinChannel, data);
-        /*if (channels[joinChannel].size > 1) {
+        if (channels[joinChannel].size > 1) {
             relayDataToAllClients(joinChannel, data);
-        }*/
+        }
         console.log(`Client added to channel ${joinChannel}: ${ws._socket.remoteAddress}`);
     } else {
         console.error(`Channel ${joinChannel} does not exist.`);
@@ -148,16 +145,10 @@ function relayDataToClients(channel, data) {
 function relayDataToAllClients(channel, data) {
     if (channels[channel]) {
         console.log('Data relayed to all clients in channel', channel, ':', data);
-        const sanitizedData = removeCircularReferences(data); // 순환 참조 제거
         channels[channel].forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
-                if (typeof sanitizedData === 'object') {
-                    client.send(JSON.stringify(sanitizedData)); // 직렬화된 데이터 전송
-                    console.log(util.inspect(sanitizedData));
-                } else {
-                    client.send(sanitizedData);
-                    console.log(util.inspect(sanitizedData));
-                }
+                const jsonData = typeof data === 'string' ? data : JSON.stringify(data);
+                client.send(jsonData);
             } else {
                 console.error('Client connection is not open, message not sent.');
             }
@@ -227,20 +218,6 @@ function resetChannels() {
     channels = {};
     channelCounter = 1;
     console.log('Channels reset.');
-}
-
-// 순환 참조 제거 함수
-function removeCircularReferences(data) {
-    const seen = new WeakSet();
-    return JSON.parse(JSON.stringify(data, function(key, value) {
-        if (typeof value === 'object' && value !== null) {
-            if (seen.has(value)) {
-                return; // 순환 참조가 발견되면 값은 제거됩니다.
-            }
-            seen.add(value);
-        }
-        return value;
-    }));
 }
 
 resetChannels();
