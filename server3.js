@@ -68,6 +68,10 @@ function addClientToChannel(channel, client) {
 
 function handleCreateChannel(ws) {
     const newChannel = createChannel(ws);
+
+    // 채널에 마스터 클라이언트 추가
+    addClientToChannel(newChannel, ws);
+    
     ws.send(JSON.stringify({
         channelCreated: newChannel,
         packet: eSocketPacket.create_channel,
