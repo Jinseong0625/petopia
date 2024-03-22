@@ -62,10 +62,10 @@ function addClientToChannel(channel, client, midx) {
         // 클라이언트가 채널에 추가되기 전에 채널의 현재 상태를 로깅합니다.
         console.log(`Before adding client to channel ${channel}:`, Array.from(channels[channel]));
 
-        channels[channel].add(client,midx);
+        channels[channel].add(client);
 
         // 클라이언트가 채널에 추가되는 시점에서 클라이언트의 IP 주소와 연결 상태를 로깅합니다.
-        console.log(`Client ${client._socket.remoteAddress} added to channel ${channel}.`);
+        console.log(`Client ${midx} added to channel ${channel}.`);
 
         // 클라이언트가 채널에 추가된 후의 채널 상태를 로깅합니다.
         logChannelInfo(channel);
@@ -75,10 +75,6 @@ function addClientToChannel(channel, client, midx) {
 }
 function handleCreateChannel(ws) {
     const newChannel = createChannel(ws);
-
-    // 채널에 마스터 클라이언트 추가
-    addClientToChannel(newChannel, ws);
-
     ws.send(JSON.stringify({
         channelCreated: newChannel,
         packet: eSocketPacket.create_channel,
@@ -89,7 +85,7 @@ function handleCreateChannel(ws) {
 
 function handleJoinChannel(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel; // 변수 이름 변경
-    const midx = clientMessage.midx;
+    const midx = clientMessage.message.midx;
 
     if (!channels[joinChannel]) {
         console.error(`Channel ${joinChannel} does not exist.`);
@@ -103,7 +99,7 @@ function handleJoinChannel(clientMessage, ws, data) {
             
             relayDataToAllClients(clientMessage, data);
         }
-        console.log(`Client added to channel ${joinChannel}: ${ws._socket.remoteAddress} ${channels[joinChannel].size}`);
+        console.log(`Client added to channel ${joinChannel}:midx ${midx}, ${ws._socket.remoteAddress} , ${channels[joinChannel].size}`);
     //} else {
     //    console.error(`Channel ${joinChannel} does not exist.`);
     //}
