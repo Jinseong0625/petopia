@@ -203,13 +203,11 @@ function handleDefaultPacket(channel, ws, data) {
 }
 
 // 클라이언트에게 데이터 전송 - 모든 클라이언트
-function relayDataToClients(channel, ws, data) {
+function relayDataToClients(channel, data) {
     if (channels[channel]) {
         channels[channel].forEach((client) => {
-            console.log('log', ws.send(data));
             if (client.readyState === WebSocket.OPEN) {
                 client.send(data);
-                console.log('log', ws.send(data));
             }
         });
     }
