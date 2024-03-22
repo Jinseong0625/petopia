@@ -78,7 +78,7 @@ function handleJoinChannel(clientMessage, ws, data) {
     if (channels[joinChannel]) {
         addClientToChannel(joinChannel, ws);
         //relayDataToClients
-        relayDataToAllClients(channel, data);
+        relayDataToAllClients(joinChannel, data);
         /*if (channels[joinChannel].size > 1) {
             relayDataToAllClients(joinChannel, data);
         }*/
