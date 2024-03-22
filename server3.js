@@ -92,8 +92,7 @@ function handleJoinChannel(clientMessage, ws, data) {
         addClientToChannel(joinChannel, ws);
         // 수정: 채널이 존재할 때만 브로드캐스트를 수행합니다.
         if (channels[joinChannel].size >= 1) {
-            // 데이터 전송 전에 로깅 추가
-            console.log(`Broadcasting data to channel ${joinChannel}:`, data);
+            
             relayDataToAllClients(clientMessage, data);
         }
         console.log(`Client added to channel ${joinChannel}: ${ws._socket.remoteAddress} ${channels[joinChannel].size}`);
@@ -163,15 +162,14 @@ function handleDefaultPacket(clientMessage, ws, data) {
 function relayDataToAllClients(clientMessage, data) {
     const joinChannel = clientMessage.channel;
     if (channels[joinChannel]) {
-        // 수정: 데이터가 문자열 또는 직렬화 가능한 객체인지 확인합니다.
         if (typeof data !== 'string' && !Buffer.isBuffer(data) && !ArrayBuffer.isView(data) && !(data instanceof ArrayBuffer)) {
             console.error('Invalid data format:', data);
             return;
         }
         console.log('Data relayed to all clients in channel', joinChannel, ':', data);
+        const jsonData = typeof data === 'string' ? data : JSON.stringify(data); // JSON 문자열로 변환
         channels[joinChannel].forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
-                const jsonData = typeof data === 'string' ? data : JSON.stringify(data);
                 client.send(jsonData);
             } else {
                 console.error('Client connection is not open, message not sent.');
