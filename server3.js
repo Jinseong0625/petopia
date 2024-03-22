@@ -163,7 +163,14 @@ function relayDataToAllClients(clientMessage, data) {
     const joinChannel = clientMessage.channel;
     if (channels[joinChannel]) {
         // JSON.stringify() 함수를 사용하여 모든 데이터를 JSON 문자열로 변환
-        const jsonData = JSON.stringify(data);
+        let jsonData;
+        if (Buffer.isBuffer(data)) {
+            // Buffer 객체인 경우 JSON 문자열로 변환
+            jsonData = data.toString();
+        } else {
+            // Buffer 객체가 아닌 경우 그대로 사용
+            jsonData = JSON.stringify(data);
+        }
         console.log('Data relayed to all clients in channel', joinChannel, ':', jsonData);
         channels[joinChannel].forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
