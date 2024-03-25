@@ -109,32 +109,15 @@ function handleJoinChannel(clientMessage, ws, data) {
     //}
 }
 
-/*function handleJoinWorld(clientMessage, ws, data) {
-    const joinChannel = clientMessage.channel;
-    if (channels[joinChannel]) {
-        console.log(`Client added to channel ${joinChannel}: ${ws.send(data)}`);
-        relayDataToAllClients(joinChannel, data);
-    } else {
-        console.error(`Channel ${joinChannel} does not exist.`);
-    }
-}*/
-
 function handleJoinWorld(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel;
     if (channels[joinChannel]) {
-        // 클라이언트에서 보낸 데이터를 파싱하여 사용합니다.
-        const messageData = JSON.parse(clientMessage.message);
-        // 이후에 messageData를 사용하여 작업을 수행합니다.
-        // 예를 들어, midx를 얻어올 수 있습니다.
-        const midx = messageData.midx;
-
-        console.log(`Client added to channel ${joinChannel}:`);
-        relayDataToAllClients(joinChannel, data);
+        console.log(`Client added to channel ${joinChannel}: ${ws.send(data)}`);
+        relayDataToMasterAndSender(joinChannel, data);
     } else {
         console.error(`Channel ${joinChannel} does not exist.`);
     }
 }
-
 
 function handleExitWorld(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel;
@@ -159,7 +142,7 @@ function handleDefaultPacket(clientMessage, ws, data) {
                 relayDataToAllClients(clientMessage, ws, data);
                 break;
             case eSendTarget.master:
-                relayDataToMasterClient(clientMessage, ws, data);
+                relayDataToMasterAndSender(clientMessage, ws, data);
                 break;
             case eSendTarget.anothers:
                 relayDataToOtherClients(clientMessage, ws, data);
@@ -209,14 +192,20 @@ function relayDataToAllClients(clientMessage, data) {
     }
 }
 
-function relayDataToMasterClient(clientMessage, senderClient, data) {
-    const joinChannel = clientMessage.channel;
-    console.log('Data relayed to master client in channel', joinChannel, ':', data);
+function relayDataToMasterAndSender(joinChannel, data, senderClient) {
+    console.log('Data relayed to master client and sender in channel', joinChannel, ':', data);
     const masterClient = Array.from(channels[joinChannel])[0];
-    if (masterClient && masterClient !== senderClient && masterClient.readyState === WebSocket.OPEN) {
-        masterClient.send(JSON.stringify(data));
+    if (masterClient && masterClient.readyState === WebSocket.OPEN) {
+        masterClient.send(data); // 데이터를 마스터 클라이언트에게 전송
     } else {
         console.error('Master client not found or not connected in channel', joinChannel);
+    }
+
+    // 보낸 클라이언트에게도 데이터를 전송
+    if (senderClient && senderClient.readyState === WebSocket.OPEN) {
+        senderClient.send(data);
+    } else {
+        console.error('Sender client not found or not connected.');
     }
 }
 
