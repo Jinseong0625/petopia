@@ -109,10 +109,27 @@ function handleJoinChannel(clientMessage, ws, data) {
     //}
 }
 
-function handleJoinWorld(clientMessage, ws, data) {
+/*function handleJoinWorld(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel;
     if (channels[joinChannel]) {
         console.log(`Client added to channel ${joinChannel}: ${ws.send(data)}`);
+        relayDataToAllClients(joinChannel, data);
+    } else {
+        console.error(`Channel ${joinChannel} does not exist.`);
+    }
+}*/
+
+function handleJoinWorld(clientMessage, ws, data) {
+    const joinChannel = clientMessage.channel;
+    if (channels[joinChannel]) {
+        // 채널이 존재할 때만 클라이언트를 채널에 추가하고 데이터를 전송합니다.
+        addClientToChannel(joinChannel, ws, midx);
+        console.log(`Client added to channel ${joinChannel}:`);
+        ws.send(data, (error) => {
+            if (error) {
+                console.error(`Error sending data to client: ${error}`);
+            }
+        });
         relayDataToAllClients(joinChannel, data);
     } else {
         console.error(`Channel ${joinChannel} does not exist.`);
