@@ -102,6 +102,7 @@ $app->post('/inven', function ($request, $response, $args) use($api)
 	$rcode = $params['rcode'];
 	$name = $params['name'];
     $price = $params['price'];
+    $count = $params['count'];
     $type = $params['type'];
 	if($midx == null)
 	{
@@ -115,7 +116,7 @@ $app->post('/inven', function ($request, $response, $args) use($api)
 	}
 	else
 	{
-		$row = $api->sp_insert_Inventory($midx,$rcode,$name,$price,$type);
+		$row = $api->sp_insert_Inventory($midx,$rcode,$name,$price,$count,$type);
 
 		if (is_array($row)) {
 			$row = json_encode($row);
@@ -126,7 +127,7 @@ $app->post('/inven', function ($request, $response, $args) use($api)
 	return $response;
 });
 
-// 인벤토리 아이템 넣기
+// 재화
 $app->post('/wallet', function ($request, $response, $args) use($api) 
 {
 	$params = $request->getParsedBody();
@@ -246,7 +247,7 @@ $app->post('/meta/food', function ($request, $response, $args) use($api)
 	return $response;
 });
 
-// Meta 음식
+// Meta 펫 데이터
 $app->post('/meta/petdata', function ($request, $response, $args) use($api) 
 {
 	$params = $request->getParsedBody();
@@ -276,7 +277,7 @@ $app->post('/meta/petdata', function ($request, $response, $args) use($api)
 	return $response;
 });
 
-// Meta 음식
+// Meta 룸
 $app->post('/meta/room', function ($request, $response, $args) use($api) 
 {
 	$params = $request->getParsedBody();
@@ -406,6 +407,30 @@ $app->post('/user/nickname', function ($request, $response, $args) use($api)
 	else
 	{
 		$row = $api->sp_update_nickname($midx,$nickname);
+	}
+	
+	$response->getBody()->write($row);
+	return $response;
+});
+
+$app->post('/inven', function ($request, $response, $args) use($api) 
+{
+	$params = $request->getParsedBody();
+	$iidx = $params['iidx'];
+
+	if($iidx == null)
+	{
+		$json_data = array
+        (
+            "error" => "E1003",
+            "data" => ""
+        );
+
+		$row = json_encode($json_data);
+	}
+	else
+	{
+		$row = $api->sp_update_inven_item($iidx);
 	}
 	
 	$response->getBody()->write($row);

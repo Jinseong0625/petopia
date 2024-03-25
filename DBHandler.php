@@ -72,14 +72,14 @@ class DBHandler extends DBConnector{
     }
 
     // 인벤토리 아이템 넣기
-    public function sp_insert_Inventory($midx,$rcode,$name,$price,$type)
+    public function sp_insert_Inventory($midx,$rcode,$name,$price,$count,$type)
     {
         $error = "E0000";
 
-        if(!($stmt = $this->db->prepare("CALL sp_insert_Inventory(?,?,?,?,?)"))){
+        if(!($stmt = $this->db->prepare("CALL sp_insert_Inventory(?,?,?,?,?,?)"))){
             $error = "E1000";
         }
-        if(!$stmt->bind_param("sssii", $midx,$rcode,$name,$price,$type)){
+        if(!$stmt->bind_param("sssiii", $midx,$rcode,$name,$price,$count,$type)){
             $error = "E1001";
         }
         if(!$stmt->execute()){
@@ -678,6 +678,37 @@ class DBHandler extends DBConnector{
             $error = "E1000";
         }
         if(!$stmt->bind_param("ss", $midx,$nickname)){
+            $error = "E1001";
+        }
+        if(!$stmt->execute()){
+            $error = "E1002";
+        }
+
+        $res = $stmt->get_result();
+        $data = array();
+
+        while($row = $res->fetch_assoc()){
+            $data[] = $row;
+        }
+
+        $json_data = array
+        (
+            "error" => $error,
+            "data" => $data
+        );
+
+        return $json_data;
+    }
+
+    // 아이템 사용
+    public function sp_update_inven_item($iidx)
+    {
+        $error = "E0000";
+
+        if(!($stmt = $this->db->prepare("CALL sp_update_inven_item(?)"))){
+            $error = "E1000";
+        }
+        if(!$stmt->bind_param("s", $iidx)){
             $error = "E1001";
         }
         if(!$stmt->execute()){
