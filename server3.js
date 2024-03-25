@@ -117,7 +117,7 @@ function handleJoinWorld(clientMessage, ws, data) {
                 console.error(`Error sending data to client: ${error}`);
             } else {
                 console.log(`Client added to channel ${joinChannel}:`);
-                relayDataToMasterAndSender(joinChannel, data);
+                relayDataToMasterAndSender(joinChannel, data, ws);
             }
         });
     } else {
