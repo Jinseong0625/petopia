@@ -123,6 +123,7 @@ function handleJoinWorld(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel;
     if (channels[joinChannel]) {
         // 채널이 존재할 때만 클라이언트를 채널에 추가하고 데이터를 전송합니다.
+        const midx = clientMessage.message.midx; // midx 값을 추출합니다.
         addClientToChannel(joinChannel, ws, midx);
         console.log(`Client added to channel ${joinChannel}:`);
         ws.send(data, (error) => {
