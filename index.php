@@ -70,6 +70,7 @@ $app->post('/dog', function ($request, $response, $args) use($api)
     $color = $params['color'];
     $mbti = $params['mbti'];
     $sexual = $params['sexual'];
+    $size = $params['size'];
 	if($midx == null)
 	{
 		$json_data = array
@@ -82,7 +83,7 @@ $app->post('/dog', function ($request, $response, $args) use($api)
 	}
 	else
 	{
-		$row = $api->sp_insert_dog($midx,$name,$age,$color,$sexual,$mbti);
+		$row = $api->sp_insert_dog($midx,$name,$age,$color,$sexual,$mbti,$size);
 
 		if (is_array($row)) {
 			$row = json_encode($row);
@@ -311,6 +312,81 @@ $app->get('/member/{midx}', function ($request, $response, $args) use($api)
 	$response->getBody()->write($row);
 	return $response;
 });
+
+$app->get('/dog/{midx}', function ($request, $response, $args) use($api) 
+{	
+	$midx = $request->getAttribute('midx');
+	$row = $api->sp_select_dog($midx);
+	$response->getBody()->write($row);
+	return $response;
+});
+
+$app->get('/inven/{midx}', function ($request, $response, $args) use($api) 
+{	
+	$midx = $request->getAttribute('midx');
+	$row = $api->sp_select_Inventory_all($midx);
+	$response->getBody()->write($row);
+	return $response;
+});
+
+$app->get('/inven/coordi/{midx}', function ($request, $response, $args) use($api) 
+{	
+	$midx = $request->getAttribute('midx');
+	$row = $api->sp_select_Inventory_Coordi($midx);
+	$response->getBody()->write($row);
+	return $response;
+});
+
+$app->get('/inven/food/{midx}', function ($request, $response, $args) use($api) 
+{	
+	$midx = $request->getAttribute('midx');
+	$row = $api->sp_select_Inventory_food($midx);
+	$response->getBody()->write($row);
+	return $response;
+});
+
+$app->get('/inven/furni/{midx}', function ($request, $response, $args) use($api) 
+{	
+	$midx = $request->getAttribute('midx');
+	$row = $api->sp_select_Inventory_furni($midx);
+	$response->getBody()->write($row);
+	return $response;
+});
+
+// Meta
+
+$app->get('/meta/get/coordi', function ($request, $response, $args) use($api) {
+	$row = $api->sp_select_MetaCoordi();
+	$response->getBody()->write($row);
+	return $response;
+});
+
+$app->get('/meta/get/furni', function ($request, $response, $args) use($api) {
+	$row = $api->sp_select_MetaDog_furni();
+	$response->getBody()->write($row);
+	return $response;
+});
+
+$app->get('/meta/get/food', function ($request, $response, $args) use($api) {
+	$row = $api->sp_select_MetaFood();
+	$response->getBody()->write($row);
+	return $response;
+});
+
+$app->get('/meta/get/pat', function ($request, $response, $args) use($api) {
+	$row = $api->sp_select_MetaPatDatas();
+	$response->getBody()->write($row);
+	return $response;
+});
+
+$app->get('/meta/get/room', function ($request, $response, $args) use($api) {
+	$row = $api->sp_select_MetaPatDatas();
+	$response->getBody()->write($row);
+	return $response;
+});
+
+
+
 
 $app->run();
 

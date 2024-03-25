@@ -41,14 +41,14 @@ class DBHandler extends DBConnector{
     }
 
     // 강아지 생성
-    public function sp_insert_dog($midx,$name,$age,$color,$mbti,$sexual)
+    public function sp_insert_dog($midx,$name,$age,$color,$mbti,$sexual,$size)
     {
         $error = "E0000";
 
-        if(!($stmt = $this->db->prepare("CALL sp_insert_dog(?,?,?,?,?,?)"))){
+        if(!($stmt = $this->db->prepare("CALL sp_insert_dog(?,?,?,?,?,?,?)"))){
             $error = "E1000";
         }
-        if(!$stmt->bind_param("ssissi", $midx,$name,$age,$color,$mbti,$sexual)){
+        if(!$stmt->bind_param("ssissis", $midx,$name,$age,$color,$mbti,$sexual,$size)){
             $error = "E1001";
         }
         if(!$stmt->execute()){
@@ -323,14 +323,14 @@ class DBHandler extends DBConnector{
     }
 
     // 강아지 조회
-    public function sp_select_dog($didx,$midx)
+    public function sp_select_dog($midx)
     {
         $error = "E0000";
 
-        if (!($stmt = $this->db->prepare("CALL sp_select_dog(?,?)"))) {
+        if (!($stmt = $this->db->prepare("CALL sp_select_dog(?)"))) {
             $error = "E1000"; // Prepare failed
         }
-        if (!$stmt->bind_param("ss", $didx,$midx)) {
+        if (!$stmt->bind_param("s", $midx)) {
             $error = "E1001"; // Bind failed
         }
         if (!$stmt->execute()) {
