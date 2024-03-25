@@ -385,7 +385,57 @@ $app->get('/meta/get/room', function ($request, $response, $args) use($api) {
 	return $response;
 });
 
+// update
 
+$app->post('/user/nickname', function ($request, $response, $args) use($api) 
+{
+	$params = $request->getParsedBody();
+	$midx = $params['midx'];
+	$nickname = $params['nickname'];
+
+	if($midx == null)
+	{
+		$json_data = array
+        (
+            "error" => "E1003",
+            "data" => ""
+        );
+
+		$row = json_encode($json_data);
+	}
+	else
+	{
+		$row = $api->sp_update_nickname($midx,$nickname);
+	}
+	
+	$response->getBody()->write($row);
+	return $response;
+});
+
+$app->post('/dog/name', function ($request, $response, $args) use($api) 
+{
+	$params = $request->getParsedBody();
+	$midx = $params['midx'];
+	$name = $params['name'];
+
+	if($midx == null)
+	{
+		$json_data = array
+        (
+            "error" => "E1003",
+            "data" => ""
+        );
+
+		$row = json_encode($json_data);
+	}
+	else
+	{
+		$row = $api->sp_update_dog_name($midx,$name);
+	}
+	
+	$response->getBody()->write($row);
+	return $response;
+});
 
 
 $app->run();

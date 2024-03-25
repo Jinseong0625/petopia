@@ -639,14 +639,14 @@ class DBHandler extends DBConnector{
     // update
 
     // 강아지 이름 변경
-    public function sp_update_dog_name($name,$midx)
+    public function sp_update_dog_name($midx,$name)
     {
         $error = "E0000";
 
         if(!($stmt = $this->db->prepare("CALL sp_update_dog_name(?,?)"))){
             $error = "E1000";
         }
-        if(!$stmt->bind_param("ss", $name,$midx)){
+        if(!$stmt->bind_param("ss", $midx,$name)){
             $error = "E1001";
         }
         if(!$stmt->execute()){
@@ -670,14 +670,14 @@ class DBHandler extends DBConnector{
     }
 
     // 유저 닉네임 변경
-    public function sp_update_nickname($nickname,$midx)
+    public function sp_update_nickname($midx,$nickname)
     {
         $error = "E0000";
 
         if(!($stmt = $this->db->prepare("CALL sp_update_nickname(?,?)"))){
             $error = "E1000";
         }
-        if(!$stmt->bind_param("ss", $nickname,$midx)){
+        if(!$stmt->bind_param("ss", $midx,$nickname)){
             $error = "E1001";
         }
         if(!$stmt->execute()){
