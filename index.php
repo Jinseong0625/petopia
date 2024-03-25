@@ -37,6 +37,8 @@ $app->post('/member', function ($request, $response, $args) use($api)
     $nickname = $params['nickname'];
     $sexual = $params['sexual'];
     $mbti = $params['mbti'];
+    $os = $params['os'];
+    $platform = $params['platform'];
 	if($UUID == null)
 	{
 		$json_data = array
@@ -49,7 +51,7 @@ $app->post('/member', function ($request, $response, $args) use($api)
 	}
 	else
 	{
-		$row = $api->sp_insert_Member($UUID,$ID,$PW,$nickname,$sexual,$mbti);
+		$row = $api->sp_insert_Member($UUID,$ID,$PW,$nickname,$sexual,$mbti,$os,$platform);
 
 		if (is_array($row)) {
 			$row = json_encode($row);
