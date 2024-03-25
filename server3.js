@@ -112,12 +112,19 @@ function handleJoinChannel(clientMessage, ws, data) {
 function handleJoinWorld(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel;
     if (channels[joinChannel]) {
-        console.log(`Client added to channel ${joinChannel}: ${ws.send(data)}`);
-        relayDataToMasterAndSender(joinChannel, data);
+        ws.send(data, (error) => {
+            if (error) {
+                console.error(`Error sending data to client: ${error}`);
+            } else {
+                console.log(`Client added to channel ${joinChannel}:`);
+                relayDataToMasterAndSender(joinChannel, data);
+            }
+        });
     } else {
         console.error(`Channel ${joinChannel} does not exist.`);
     }
 }
+
 
 function handleExitWorld(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel;
