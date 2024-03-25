@@ -50,8 +50,10 @@ wss.on('connection', (ws) => {
 
 function createChannel(masterClient) {
     const newChannel = channelCounter++;
-    channels[newChannel] = new Set();
-    channels[newChannel].add(masterClient);
+    //channels[newChannel] = new Set();
+    //channels[newChannel].add(masterClient);
+    channels[newChannel] = new Map(); // Change Set to Map to store clients with midx
+    channels[newChannel].set(masterClient, masterClient.midx);
     console.log(`Channel ${newChannel} created. Master client: ${masterClient._socket.remoteAddress}`);
     logChannelInfo(newChannel);
     return newChannel;
