@@ -10,14 +10,14 @@ class DBHandler extends DBConnector{
     // insert
 
     // 간단한 회원가입
-    public function sp_insert_Member($UUID,$ID,$PW,$nickname,$sexual,$mbti)
+    public function sp_insert_Member($UUID,$ID,$PW,$nickname,$sexual,$mbti,$os,$platform)
     {
         $error = "E0000";
 
-        if(!($stmt = $this->db->prepare("CALL sp_insert_Member(?,?,?,?,?,?)"))){
+        if(!($stmt = $this->db->prepare("CALL sp_insert_Member(?,?,?,?,?,?,?,?)"))){
             $error = "E1000";
         }
-        if(!$stmt->bind_param("ssssis", $UUID,$ID,$PW,$nickname,$sexual,$mbti)){
+        if(!$stmt->bind_param("ssssisss", $UUID,$ID,$PW,$nickname,$sexual,$mbti,$os,$platform)){
             $error = "E1001";
         }
         if(!$stmt->execute()){
