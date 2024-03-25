@@ -122,20 +122,19 @@ function handleJoinChannel(clientMessage, ws, data) {
 function handleJoinWorld(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel;
     if (channels[joinChannel]) {
-        // 채널이 존재할 때만 클라이언트를 채널에 추가하고 데이터를 전송합니다.
-        const midx = clientMessage.message.midx; // midx 값을 추출합니다.
-        addClientToChannel(joinChannel, ws, midx);
+        // 클라이언트에서 보낸 데이터를 파싱하여 사용합니다.
+        const messageData = JSON.parse(clientMessage.message);
+        // 이후에 messageData를 사용하여 작업을 수행합니다.
+        // 예를 들어, midx를 얻어올 수 있습니다.
+        const midx = messageData.midx;
+
         console.log(`Client added to channel ${joinChannel}:`);
-        ws.send(data, (error) => {
-            if (error) {
-                console.error(`Error sending data to client: ${error}`);
-            }
-        });
         relayDataToAllClients(joinChannel, data);
     } else {
         console.error(`Channel ${joinChannel} does not exist.`);
     }
 }
+
 
 function handleExitWorld(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel;
