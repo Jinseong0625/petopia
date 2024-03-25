@@ -413,7 +413,7 @@ $app->post('/user/nickname', function ($request, $response, $args) use($api)
 	return $response;
 });
 
-$app->post('/inven', function ($request, $response, $args) use($api) 
+$app->post('/inven/use', function ($request, $response, $args) use($api) 
 {
 	$params = $request->getParsedBody();
 	$iidx = $params['iidx'];
