@@ -60,7 +60,20 @@ function createChannel(masterClient) {
 }
 
 function addClientToChannel(channel, client, midx) {
+
     if (channels[channel]) {
+        // Check if midx already exists in the channel
+        if (!Array.from(channels[channel].values()).includes(midx)) {
+            channels[channel].set(client, midx); // midx 기준으로 클라를 추가
+            logChannelInfo(channel);
+            console.log(`Client ${midx} added to channel ${channel}.`);
+        } else {
+            console.log(`Client ${midx} is already in channel ${channel}.`);
+        }
+    } else {
+        console.error(`Channel ${channel} does not exist.`);
+    }
+    /*if (channels[channel]) {
         // 클라이언트가 채널에 추가되기 전에 채널의 현재 상태를 로깅합니다.
         console.log(`Before adding client to channel ${channel}:`, Array.from(channels[channel]));
 
@@ -75,7 +88,7 @@ function addClientToChannel(channel, client, midx) {
         console.log(`Channel ${channel} now has ${channels[channel].size} client(s).`);
     } else {
         console.error(`Channel ${channel} does not exist.`);
-    }
+    }*/
 }
 function handleCreateChannel(ws) {
     const newChannel = createChannel(ws);
@@ -100,7 +113,15 @@ function handleJoinChannel(clientMessage, ws, data) {
     //if (channels[joinChannel]) {
         addClientToChannel(joinChannel, ws, midx);
         // 수정: 채널이 존재할 때만 브로드캐스트를 수행합니다.
-        if (channels[joinChannel].size >= 1) {
+
+        if (channels[joinChannel].has(ws)) {
+            relayDataToAllClients(clientMessage, data);
+        }
+    
+        console.log(`Client added to channel ${joinChannel}: midx ${midx}, ${ws._socket.remoteAddress}, ${channels[joinChannel].size}`);
+    }
+
+       /* if (channels[joinChannel].size >= 1) {
             
             relayDataToAllClients(clientMessage, data);
         }
@@ -109,7 +130,7 @@ function handleJoinChannel(clientMessage, ws, data) {
     //} else {
     //    console.error(`Channel ${joinChannel} does not exist.`);
     //}
-}
+}*/
 
 function handleJoinWorld(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel;
