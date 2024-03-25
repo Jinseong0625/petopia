@@ -130,7 +130,7 @@ function handleExitWorld(clientMessage, ws, data) {
     const joinChannel = clientMessage.channel;
     if (channels[joinChannel]) {
         removeClient(ws);
-        relayDataToAllClients(joinChannel, ws, data);
+        relayDataToAllClients(joinChannel, data);
         console.log(`Client exited from channel ${joinChannel}: ${ws._socket.remoteAddress}`);
     } else {
         console.error(`Channel ${joinChannel} does not exist.`);
