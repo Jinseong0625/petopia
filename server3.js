@@ -110,7 +110,7 @@ function handleJoinChannel(clientMessage, ws, data) {
 }
 
 function handleJoinWorld(clientMessage, ws, data) {
-    const joinChannel = clientMessage.channel;
+    const joinChannel = clientMessage.data.channel;
     if (channels[joinChannel]) {
         console.log(`Client added to channel ${joinChannel}: ${ws.send(data)}`);
         relayDataToAllClients(joinChannel, data);
