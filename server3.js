@@ -200,17 +200,33 @@ function relayDataToAllClients(clientMessage, data) {
 }
 
 function relayDataToMasterAndSender(joinChannel, data, senderClient) {
-    console.log('Data relayed to master client and sender in channel', joinChannel, ':', data);
     const masterClient = Array.from(channels[joinChannel])[0];
     if (masterClient && masterClient.readyState === WebSocket.OPEN) {
-        masterClient.send(data); // 데이터를 마스터 클라이언트에게 전송
+        let jsonData;
+        if (Buffer.isBuffer(data)) {
+            // Buffer 객체인 경우 JSON 문자열로 변환
+            jsonData = data.toString();
+        } else {
+            // Buffer 객체가 아닌 경우 그대로 사용
+            jsonData = JSON.stringify(data);
+        }
+        masterClient.send(jsonData); // 데이터를 마스터 클라이언트에게 전송
+        console.log('Data relayed to master client and sender in channel', joinChannel, ':', data);
     } else {
         console.error('Master client not found or not connected in channel', joinChannel);
     }
 
     // 보낸 클라이언트에게도 데이터를 전송
     if (senderClient && senderClient.readyState === WebSocket.OPEN) {
-        senderClient.send(data);
+        let jsonData;
+        if (Buffer.isBuffer(data)) {
+            // Buffer 객체인 경우 JSON 문자열로 변환
+            jsonData = data.toString();
+        } else {
+            // Buffer 객체가 아닌 경우 그대로 사용
+            jsonData = JSON.stringify(data);
+        }
+        senderClient.send(jsonData);
     } else {
         console.error('Sender client not found or not connected.');
     }
