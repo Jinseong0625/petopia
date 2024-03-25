@@ -211,7 +211,7 @@ function relayDataToMasterAndSender(joinChannel, data, senderClient) {
             jsonData = JSON.stringify(data);
         }
         masterClient.send(jsonData); // 데이터를 마스터 클라이언트에게 전송
-        console.log('Data relayed to master client and sender in channel', joinChannel, ':', data);
+        console.log('Data relayed to master client and sender in channel', joinChannel, ':', jsonData);
     } else {
         console.error('Master client not found or not connected in channel', joinChannel);
     }
